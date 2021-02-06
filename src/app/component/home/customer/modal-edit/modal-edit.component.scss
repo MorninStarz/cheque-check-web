@@ -1,0 +1,23 @@
+input:read-only {
+    background-color: white;
+}
+
+::ng-deep .cdk-overlay-container { 
+    z-index: 2000; 
+}
+
+.account-head {
+    width: 100%;
+    border-radius: 5px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    color: white;
+    background-color: #6b3d00;
+}
+
+.account-body {
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}

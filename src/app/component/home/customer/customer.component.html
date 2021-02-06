@@ -1,0 +1,103 @@
+<div class="row m-0">
+    <div class="col-md-12 p-4">
+        <h2 class="title"><span class="font-weight-bold" style="color: #6b3d00;">C</span>ustomer</h2>
+    </div>
+</div>
+<!-- Search Box -->
+<div class="content ml-3 mr-3 search-title row"><div class="col-md-12">Search</div></div>
+<div class="content ml-3 mr-3 p-4 search-content">
+    <div class="row">
+        <div class="col-md-2 mt-1 text-right"><label>Name : </label></div>
+        <div class="col-md-4">
+            <input [(ngModel)]="form.name" type="text" class="form-control" placeholder="Enter Name" autocomplete="off" />
+        </div>
+        <div class="col-md-1 mt-1 text-right"><label>Lastname : </label></div>
+        <div class="col-md-4">
+            <input [(ngModel)]="form.lastname" type="text" class="form-control" placeholder="Enter Lastname" autocomplete="off" />
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-2 mt-1 text-right"><label>Mobile No. : </label></div>
+        <div class="col-md-4">
+            <input [(ngModel)]="form.mobile" type="text" class="form-control" placeholder="Enter Mobile No." autocomplete="off" />
+        </div>
+        <div class="col-md-1 mt-1 pl-0 text-right"><label>Account No. : </label></div>
+        <div class="col-md-4">
+            <input [(ngModel)]="form.account_no" type="text" class="form-control" placeholder="Enter Account No." autocomplete="off" />
+        </div>
+    </div>
+    <div class="row m-0 p-0" *ngIf="error.mobile_no">
+        <div class="col-md-2"></div>
+        <div class="col-md-4 error-text">Accept only number !</div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-2 mt-1 text-right"><label>Due Date From : </label></div>
+        <div class="row col-md-4">
+            <div class="col-md-11 pr-0 mr-0">
+                <mat-form-field>
+                    <input [(ngModel)]="form.start_date" matInput [max]="today" class="form-control" placeholder="Choose Date From" [matDatepicker]="date_from" readonly>
+                    <mat-datepicker #date_from></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-1 pl-0 ml-0"><mat-datepicker-toggle matSuffix [for]="date_from"></mat-datepicker-toggle></div>
+        </div>
+        <div class="col-md-1 mt-1 ml-3 mr-3 p-0 text-right"><label>Due Date To : </label></div>
+        <div class="row col-md-4">
+            <div class="col-md-11 pr-0 mr-0">
+                <mat-form-field>
+                    <input [(ngModel)]="form.end_date" matInput [max]="today" class="form-control" placeholder="Choose Date To" [matDatepicker]="date_to" readonly>
+                    <mat-datepicker #date_to></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-1 pl-0 ml-0"><mat-datepicker-toggle matSuffix [for]="date_to"></mat-datepicker-toggle></div>
+        </div>
+    </div>
+    <div class="row m-0 p-0" *ngIf="error.start_date || error.end_date">
+        <div class="col-md-2"></div>
+        <div class="col-md-4 error-text">Date from must be after Date to !</div>
+        <div class="col-md-1"></div>
+        <div class="col-md-4 error-text">Date To must be before Date from !</div>
+    </div>
+</div>
+
+<div class="ml-3 mr-3 mt-4 row">
+    <div class="col-md-4"></div>
+    <div class="col-md-2">
+        <button (click)="clearBtn()" class="btn btn-default" style="border: 1px solid #cccccc; width: 100%;">Clear</button>
+    </div>
+    <div class="col-md-2">
+        <button (click)="searchBtn()" class="btn-submit">Search</button>
+    </div>
+</div>
+<ng-container *ngIf="is_search">
+    <div *ngIf="permission.canEdit" class="row pr-4">
+        <div class="col-md-10"></div>
+        <div class="col-md-2">
+            <button (click)="showModalAdd()" class="btn-submit">+ Customer</button>
+        </div>
+    </div>
+    <div class="ml-3 mr-3 mt-4 row">
+        <table class="table">
+            <tr><th *ngFor="let field of fields">{{ field }}</th><th>Action</th></tr>
+            <ng-container *ngIf="items.length > 0">
+                <tr *ngFor="let item of items; let i = index;">
+                    <td>{{ item.no }}</td>
+                    <td>{{ mapName(item.name, item.lastname) }}</td>
+                    <td>{{ item.mobile || '-' }}</td>
+                    <td>{{ numberFormat(item.expect) }}</td>
+                    <td>{{ numberFormat(item.actual) }}</td>
+                    <td>{{ dateFormat(item.due_date) }}</td>
+                    <td>{{ dateFormat(item.create_date) }}</td>
+                    <td>{{ dateFormat(item.update_date) }}</td>
+                    <td>
+                        <img *ngIf="permission.canEdit" (click)="showModalEdit(i)" style="cursor: pointer;" src="../../../../assets/edit.png" />
+                    </td>
+                </tr>
+            </ng-container>
+            <ng-container *ngIf="items.length < 1">
+                <tr class="text-center"><td colspan="9">No item found</td></tr>
+            </ng-container>
+        </table>
+    </div>
+    <app-pagination *ngIf="items.length > 0" [limit]="limit" [total]="total" (pageEmit)="pagination($event)"></app-pagination>    
+</ng-container>

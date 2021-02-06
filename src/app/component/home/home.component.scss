@@ -1,0 +1,60 @@
+$base-color: #ffb553;
+
+.header {
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 8vh;
+    background-color: black !important;
+    border: none !important;
+    border-radius: 0%;
+    z-index: 1;
+    color: white;
+}
+.logout-link {
+    color: white;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.menu {
+    margin-top: 10vh;
+    margin-left: 1vw;
+    width: 15vw;
+    height: auto;
+    font-size: medium;
+}
+.menu-item {
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 100%;
+    cursor: pointer;
+}
+.menu-item:hover {
+    color: #6b3d00;
+    border-color: $base-color;
+}
+.end-menu {
+    margin-bottom: 8vh;
+}
+.logo {
+    width: 80%;
+    height: auto;
+}
+.active {
+    color: #6b3d00;
+}
+.page {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-top: 10vh;
+    margin-right: 1vw;
+    width: 82vw;
+    min-height: 88vh;
+    padding: 0;
+}

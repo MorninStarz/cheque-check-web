@@ -1,0 +1,44 @@
+<div class="modal-header">
+    <h4 class="modal-title">Add Bank</h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeBtn()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-4 mt-2 text-right"><label>Bank Name : </label></div>
+        <div class="col-md-6">
+            <input [(ngModel)]="form.bank_name" class="form-control" placeholder="Enter Name" />
+        </div>
+    </div>
+    <div *ngIf="submitted && !form.bank_name" class="row p-0 mx-0">
+        <div class="col-md-4"></div>
+        <div class="col-md-6 error-text">Bank Name is required !</div>
+    </div>
+    <ng-container *ngFor="let branch of form.branches; let i = index;">
+        <div class="row mt-2 mt-2">
+            <div class="col-md-4 mt-2 text-right"><label>Brach Name {{ i + 1 }} : </label></div>
+            <div class="col-md-6">
+                <input [(ngModel)]="form.branches[i].branch_name" class="form-control" placeholder="Enter Lastname" />
+            </div>
+            <div class="col-md-1 mt-2">
+                <img *ngIf="form.branches.length > 1" (click)="remove(i)" style="cursor: pointer;" src="../../../../assets/remove.png" />
+            </div>
+            <div *ngIf="i === form.branches.length - 1" class="col-md-1 mt-2">
+                <img (click)="add()" style="cursor: pointer;" src="../../../../assets/add.png" />
+            </div>
+        </div>
+        <div *ngIf="submitted && !form.branches[i].branch_name" class="row p-0 mx-0">
+            <div class="col-md-4"></div>
+            <div class="col-md-6 error-text">Branch Name {{ i + 1 }} is required !</div>
+        </div>
+    </ng-container>
+</div>
+<div class="modal-footer">
+    <div class="p-0 col-md-2">
+        <button type="button" class="btn btn-default" style="border: 1px solid #cccccc; width: 100%;" (click)="closeBtn()">Close</button>
+    </div>
+    <div class="p-0 col-md-2">
+        <button type="button" class="btn-submit" (click)="saveBtn()">Save</button>
+    </div>
+</div>

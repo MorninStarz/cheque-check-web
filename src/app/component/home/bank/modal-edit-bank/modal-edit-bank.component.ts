@@ -1,0 +1,106 @@
+import { Component, Input, OnInit } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { BankService } from 'src/app/services/bank/bank.service';
+import { BranchForm, EditBankForm } from './modal-edit-bank';
+import Swal from 'sweetalert2';
+import * as _ from 'lodash';
+
+@Component({
+  selector: 'app-modal-edit-bank',
+  templateUrl: './modal-edit-bank.component.html',
+  styleUrls: ['./modal-edit-bank.component.scss']
+})
+export class ModalEditBankComponent implements OnInit {
+
+  constructor(public activeModal: NgbActiveModal, private bankService: BankService) { }
+
+  @Input() bank: any;
+
+  submitted = false;
+  form: EditBankForm = new EditBankForm();
+  addBranch: Array<BranchForm> = [];
+  deleteBranch: Array<BranchForm> = [];
+
+  ngOnInit(): void {
+    this.form.bank_id = _.get(this.bank, 'data.bank_id');
+    this.form.bank_name = _.get(this.bank, 'data.bank_name');
+    const branches: Array<any> = _.get(this.bank, 'data.branches');
+    this.form.branches = [];
+    branches.forEach((e) => this.form.branches.push({ branch_id: _.get(e, 'branch_id'), branch_name: _.get(e, 'branch_name') }));
+  }
+
+  add() {
+    this.form.branches.push(new BranchForm());
+  }
+
+  remove(i: number) {
+    const del = this.form.branches.splice(i, 1);
+    if (del[0].branch_id) this.deleteBranch.push(del[0]);
+  }
+  
+  validate() {
+    this.submitted = true;
+    let valid = true;
+    if (!this.form.bank_name) valid = false;
+    if (this.form.branches.some((e) => !e.branch_name)) valid = false;
+    return valid;
+  }
+
+  saveBtn() {
+    if (!this.validate()) return;
+    Swal.fire({
+      icon: 'question',
+      title: 'Edit Bank',
+      text: 'Are you sure to Edit Bank ?',
+      showConfirmButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      reverseButtons: true
+    }).then(async (res) => {
+      if (res.isConfirmed) {
+        try {
+          let req: any = {
+            bank_id: this.form.bank_id,
+            bank_name: this.form.bank_name,
+          };
+          if (!_.isEmpty(this.form.branches)) {
+            req.add_branch = [...this.form.branches.filter((e) => !e.branch_id)];
+            this.form.branches = this.form.branches.filter((e) => e.branch_id);
+          }
+          if (!_.isEmpty(this.deleteBranch)) {
+            req.delete_branch = [...this.deleteBranch];
+          }
+          req.edit_branch = [...this.form.branches];
+          await this.bankService.editBank(req);
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Bank has successfully edited',
+            allowEscapeKey: false,
+            allowOutsideClick: false
+          }).then(() => {
+            this.closeBtn();
+          });
+        } catch (e) {
+          if (e.response.data.code === 401) {
+            sessionStorage.clear();
+            window.location.reload();
+            return;
+          }
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: e.response.data.message
+          });
+        }
+      }
+    });
+  }
+
+  closeBtn() {
+    this.form = new EditBankForm();
+    this.submitted = false;
+    this.activeModal.close();
+  }
+
+}

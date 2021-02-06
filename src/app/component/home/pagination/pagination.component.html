@@ -1,0 +1,13 @@
+<div class="row" class="width: 100%;">
+    <div class="col-md-12 text-center">
+        <ng-container *ngIf="current !== 0">
+            <button *ngIf="current !== 0" (click)="start()" class="link"><<</button>
+            <button (click)="prev()" class="link"><</button>
+        </ng-container>
+        <button *ngFor="let page of pages; let i = index;" [ngClass]="{ 'page-active': current === i }" (click)="page(i)" class="link">{{ page }}</button>
+        <ng-container *ngIf="current !== pages.length - 1">
+            <button (click)="next()" class="link">></button>
+            <button (click)="end()" class="link">>></button>
+        </ng-container>
+    </div>
+</div>

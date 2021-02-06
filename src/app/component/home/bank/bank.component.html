@@ -1,0 +1,60 @@
+<div class="row m-0">
+    <div class="col-md-12 p-4">
+        <h2 class="title"><span class="font-weight-bold" style="color: #6b3d00;">B</span>ank</h2>
+    </div>
+</div>
+<!-- Search Box -->
+<div class="content ml-3 mr-3 search-title row"><div class="col-md-12">Search</div></div>
+<div class="content ml-3 mr-3 p-4 search-content">
+    <div class="row">
+        <div class="col-md-2 mt-1 text-right"><label>Bank Name : </label></div>
+        <div class="col-md-4">
+            <input [(ngModel)]="form.bank_name" type="text" class="form-control" placeholder="Enter Bank Name" autocomplete="off" />
+        </div>
+        <div class="col-md-1 mt-1 text-right"><label>Branch Name : </label></div>
+        <div class="col-md-4">
+            <input [(ngModel)]="form.branch_name" type="text" class="form-control" placeholder="Enter Branch Name" autocomplete="off" />
+        </div>
+    </div>
+</div>
+
+<div class="ml-3 mr-3 mt-4 row">
+    <div class="col-md-4"></div>
+    <div class="col-md-2">
+        <button (click)="clearBtn()" class="btn btn-default" style="border: 1px solid #cccccc; width: 100%;">Clear</button>
+    </div>
+    <div class="col-md-2">
+        <button (click)="searchBtn()" class="btn-submit">Search</button>
+    </div>
+</div>
+<ng-container *ngIf="is_search">
+    <div class="row pr-4">
+        <div class="col-md-10"></div>
+        <div class="col-md-2">
+            <button *ngIf="permission.canEdit" (click)="showModalAdd()" class="btn-submit">+ Bank</button>
+        </div>
+    </div>
+    <div class="ml-3 mr-3 mt-4 row">
+        <table class="table">
+            <tr><th *ngFor="let field of fields">{{ field }}</th><th>Action</th></tr>
+            <ng-container *ngIf="items.length > 0">
+                <tr *ngFor="let item of items; let i = index;">
+                    <td>{{ item.no }}</td>
+                    <td>{{ item.bank_name || '-' }}</td>
+                    <td>{{ dateFormat(item.create_date) }}</td>
+                    <td>{{ dateFormat(item.update_date) }}</td>
+                    <td>{{ item.is_active ? 'Active' : 'Inactive' }}</td>
+                    <td>
+                        <img (click)="showModalView(i)" style="cursor: pointer;" src="../../../../assets/view.png" />
+                        <img *ngIf="permission.canEdit" (click)="showModalEdit(i)" style="cursor: pointer;" src="../../../../assets/edit.png" />
+                        <img *ngIf="permission.canDelete" (click)="deleteBank(i)" style="cursor: pointer;" src="../../../../assets/delete.png" />
+                    </td>
+                </tr>
+            </ng-container>
+            <ng-container *ngIf="items.length < 1">
+                <tr class="text-center"><td colspan="6">No item found</td></tr>
+            </ng-container>
+        </table>
+    </div>
+    <app-pagination *ngIf="items.length > 0" [limit]="limit" [total]="total" (pageEmit)="pagination($event)"></app-pagination>    
+</ng-container>

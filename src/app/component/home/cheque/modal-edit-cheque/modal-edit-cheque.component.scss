@@ -1,0 +1,7 @@
+input:read-only {
+    background-color: white;
+}
+
+::ng-deep .cdk-overlay-container { 
+    z-index: 2000; 
+}

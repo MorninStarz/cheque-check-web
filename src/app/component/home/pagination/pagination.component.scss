@@ -1,0 +1,16 @@
+$base-color: #6b3d00;
+
+.link {
+    border: 1px solid $base-color;
+    background-color: white;
+    color: $base-color;
+    border-radius: 0.25em;
+    margin-left: 2px;
+    margin-right: 2px;
+    width: 3%;
+}
+
+.page-active {
+    background-color: $base-color;
+    color: white;
+}

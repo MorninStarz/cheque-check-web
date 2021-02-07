@@ -24,7 +24,7 @@
             <div class="col-md-1 mt-2">
                 <img *ngIf="form.branches.length > 1" (click)="remove(i)" style="cursor: pointer;" src="../../../../assets/remove.png" />
             </div>
-            <div *ngIf="i === form.branches.length - 1" class="col-md-1 mt-2">
+            <div *ngIf="i === form.branches.length - 1 || showAdd" class="col-md-1 mt-2">
                 <img (click)="add()" style="cursor: pointer;" src="../../../../assets/add.png" />
             </div>
         </div>

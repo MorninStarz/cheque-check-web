@@ -4,6 +4,7 @@ import { BankService } from 'src/app/services/bank/bank.service';
 import { BranchForm, EditBankForm } from './modal-edit-bank';
 import Swal from 'sweetalert2';
 import * as _ from 'lodash';
+import { isEmpty } from 'src/main';
 
 @Component({
   selector: 'app-modal-edit-bank',
@@ -20,13 +21,21 @@ export class ModalEditBankComponent implements OnInit {
   form: EditBankForm = new EditBankForm();
   addBranch: Array<BranchForm> = [];
   deleteBranch: Array<BranchForm> = [];
+  showAdd = false;
 
   ngOnInit(): void {
     this.form.bank_id = _.get(this.bank, 'data.bank_id');
     this.form.bank_name = _.get(this.bank, 'data.bank_name');
-    const branches: Array<any> = _.get(this.bank, 'data.branches');
+    const branches: any = _.get(this.bank, 'data.branches');
     this.form.branches = [];
-    branches.forEach((e) => this.form.branches.push({ branch_id: _.get(e, 'branch_id'), branch_name: _.get(e, 'branch_name') }));
+    if (Array.isArray(branches)) {
+      branches.forEach((e) => this.form.branches.push({ branch_id: _.get(e, 'branch_id'), branch_name: _.get(e, 'branch_name') }));
+    } else if (!isEmpty(branches)) {
+      this.form.branches.push({ ...branches });
+    } 
+    if (this.form.branches.length === 0) {
+      this.showAdd = true;
+    }
   }
 
   add() {
@@ -100,6 +109,7 @@ export class ModalEditBankComponent implements OnInit {
   closeBtn() {
     this.form = new EditBankForm();
     this.submitted = false;
+    this.showAdd = false;
     this.activeModal.close();
   }
 

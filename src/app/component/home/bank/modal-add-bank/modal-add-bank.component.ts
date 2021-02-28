@@ -40,11 +40,11 @@ export class ModalAddBankComponent implements OnInit {
     if (!this.validate()) return;
     Swal.fire({
       icon: 'question',
-      title: 'Add Bank',
-      text: 'Are you sure to Add Bank ?',
+      title: 'เพิ่มข้อมูลธนาคาร',
+      text: 'ต้องการเพิ่มข้อมูลธนาคารหรือไม่ ?',
       showConfirmButton: true,
       showCancelButton: true,
-      confirmButtonText: 'Confirm',
+      confirmButtonText: 'ตกลง',
       reverseButtons: true
     }).then(async (res) => {
       if (res.isConfirmed) {
@@ -52,8 +52,8 @@ export class ModalAddBankComponent implements OnInit {
           await this.bankService.addBank(this.form);
           Swal.fire({
             icon: 'success',
-            title: 'Success',
-            text: 'Bank has successfully created',
+            title: 'สำเร็จ',
+            text: 'เพิ่มข้อมูลธนาคารสำเร็จ',
             allowEscapeKey: false,
             allowOutsideClick: false
           }).then(() => {
@@ -61,13 +61,13 @@ export class ModalAddBankComponent implements OnInit {
           });
         } catch (e) {
           if (e.response.data.code === 401) {
-            sessionStorage.clear();
+            localStorage.clear();
             window.location.reload();
             return;
           }
           Swal.fire({
             icon: 'error',
-            title: 'Error',
+            title: 'ผิดพลาด',
             text: e.response.data.message
           });
         }

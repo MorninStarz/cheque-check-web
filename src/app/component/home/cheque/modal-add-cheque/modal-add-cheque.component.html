@@ -1,132 +1,117 @@
-<div class="modal-header">
-    <h4 class="modal-title">Add Cheque</h4>
+<div class="modal-header align-middle">
+    <h4 class="modal-title">เพิ่มข้อมูลเช็ค</h4>
     <button type="button" class="close" aria-label="Close" (click)="closeBtn()">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
 <div class="modal-body">
     <div class="row">
-        <div class="col-md-4 mt-2 text-right"><label>Cheque No. : </label></div>
+        <div class="col-md-4 mt-2 text-right"><label>เลขที่เช็ค : </label></div>
         <div class="col-md-6">
-            <input [(ngModel)]="form.cheque_no" class="form-control" placeholder="Enter Cheque No." />
+            <input [(ngModel)]="form.cheque_no" class="form-control" placeholder="กรุณากรอกเลขที่เช็ค" />
         </div>
     </div>
     <div *ngIf="submitted && !form.cheque_no" class="row p-0 mx-0">
         <div class="col-md-4"></div>
-        <div class="col-md-6 error-text">Cheque No. is required !</div>
+        <div class="col-md-6 error-text">กรุณากรอกเลขที่เช็ค !</div>
     </div>
     <div *ngIf="submitted && error.cheque_no" class="row p-0 mx-0">
         <div class="col-md-4"></div>
-        <div class="col-md-6 error-text">Accept only number !</div>
+        <div class="col-md-6 error-text">กรุณากรอกตัวเลข !</div>
     </div>
     <div class="row mt-2">
-        <div class="col-md-4 mt-2 text-right"><label>Customer Name : </label></div>
+        <div class="col-md-4 mt-2 text-right"><label>ชื่อลูกค้า : </label></div>
         <div class="col-md-6">
-            <select [(ngModel)]="form.customer_id" class="form-control">
-                <option value="" disabled>--- Select One ---</option>
-                <option value="{{ option.value }}" *ngFor="let option of customerOptions">{{ option.text }}</option>
-            </select>
+            <mat-form-field class="customer_field">
+                <input type="text" [formControl]="customer" placeholder="กรุณาเลือกชื่อลูกค้า" class="form-control" matInput [matAutocomplete]="customerAuto">
+                <mat-autocomplete #customerAuto="matAutocomplete">
+                    <mat-option *ngFor="let option of customerFilter | async" [value]="option.text">
+                        {{ option.text }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
         </div>
     </div>
     <div *ngIf="submitted && !form.customer_id" class="row p-0 mx-0">
         <div class="col-md-4"></div>
-        <div class="col-md-6 error-text">Customer Name is required !</div>
+        <div class="col-md-6 error-text">กรุณาเลือกชื่อลูกค้า !</div>
+    </div>
+    <div *ngIf="submitted && error.customer_id" class="row p-0 mx-0">
+        <div class="col-md-4"></div>
+        <div class="col-md-6 error-text">ไม่พบชื่อลูกค้าที่เลือก !</div>
     </div>
     <div class="row mt-2">
-        <div class="col-md-4 mt-2 text-right"><label>Bank Name : </label></div>
+        <div class="col-md-4 mt-2 text-right"><label>ธนาคาร : </label></div>
         <div class="col-md-6">
             <select [(ngModel)]="form.bank_id" (change)="onChangeBankName()" class="form-control">
-                <option value="" disabled>--- Select One ---</option>
+                <option value="" disabled>--- กรุณาเลือก ---</option>
                 <option value="{{ option.value }}" *ngFor="let option of bankOptions">{{ option.text }}</option>
             </select>
         </div>
     </div>
     <div *ngIf="submitted && !form.bank_id" class="row p-0 mx-0">
         <div class="col-md-4"></div>
-        <div class="col-md-6 error-text">Bank Name is required !</div>
+        <div class="col-md-6 error-text">กรุณากรอกธนาคาร !</div>
     </div>
     <div class="row mt-2">
-        <div class="col-md-4 mt-2 text-right"><label>Branch Name : </label></div>
+        <div class="col-md-4 mt-2 text-right"><label>สาขา : </label></div>
         <div class="col-md-6">
             <select [(ngModel)]="form.branch_id" class="form-control" [disabled]="!branchOptions || branchOptions.length === 0">
-                <option value="" disabled>--- Select One ---</option>
+                <option value="" disabled>--- กรุณาเลือก ---</option>
                 <option value="{{ option.value }}" *ngFor="let option of branchOptions">{{ option.text }}</option>
             </select>
         </div>
     </div>
     <div *ngIf="submitted && !form.branch_id" class="row p-0 mx-0">
         <div class="col-md-4"></div>
-        <div class="col-md-6 error-text">Branch Name is required !</div>
+        <div class="col-md-6 error-text">กรุณากรอกสาขา !</div>
     </div>
     <div class="row mt-2">
-        <div class="col-md-4 mt-2 text-right"><label>Month : </label></div>
+        <div class="col-md-4 mt-2 text-right"><label>เดือน : </label></div>
         <div class="col-md-6">
-            <input [(ngModel)]="form.month" class="form-control" placeholder="Enter Month" />
+            <input [(ngModel)]="form.month" class="form-control" placeholder="กรุณากรอกเดือน" />
         </div>
     </div>
     <div class="row mt-2">
-        <div class="col-md-4 mt-2 text-right"><label>Amount : </label></div>
+        <div class="col-md-4 mt-2 text-right"><label>จำนวนเงิน : </label></div>
         <div class="col-md-6">
-            <input [(ngModel)]="form.amount" class="form-control" placeholder="Enter Amount" />
+            <input [(ngModel)]="form.amount" class="form-control" placeholder="กรุณากรอกจำนวนเงิน" />
         </div>
     </div>
     <div *ngIf="submitted && !form.amount" class="row p-0 mx-0">
         <div class="col-md-4"></div>
-        <div class="col-md-6 error-text">Amount is required !</div>
+        <div class="col-md-6 error-text">กรุณากรอกจำนวนเงิน !</div>
     </div>
     <div *ngIf="submitted && error.amount" class="row p-0 mx-0">
         <div class="col-md-4"></div>
-        <div class="col-md-6 error-text">Accept only number !</div>
+        <div class="col-md-6 error-text">กรุณากรอกตัวเลข !</div>
     </div>
     <div class="row mt-2">
-        <div class="col-md-4 mt-2 text-right"><label>Pending Date : </label></div>
+        <div class="col-md-4 mt-2 text-right"><label>วันที่หน้าเช็ค : </label></div>
         <div class="row col-md-6">
             <div class="col-md-11 pr-0 mr-0">
                 <mat-form-field>
-                    <input [(ngModel)]="form.pending_date" [min]="today" matInput class="form-control" placeholder="Choose Pending Date" [matDatepicker]="pending_date" readonly>
+                    <input [(ngModel)]="form.pending_date" matInput 
+                        (click)="pending_date.open()"
+                        class="form-control" 
+                        placeholder="กรุณาเลือกวันที่หน้าเช็ค" 
+                        [matDatepicker]="pending_date" readonly>
                     <mat-datepicker #pending_date></mat-datepicker>
                 </mat-form-field>
             </div>
             <div class="col-md-1 pl-0 ml-0"><mat-datepicker-toggle matSuffix [for]="pending_date"></mat-datepicker-toggle></div>
         </div>
     </div>
-    <div class="row mt-2">
-        <div class="col-md-4 mt-2 text-right"><label>Approve Date : </label></div>
-        <div class="row col-md-6">
-            <div class="col-md-11 pr-0 mr-0">
-                <mat-form-field>
-                    <input [(ngModel)]="form.approve_date" [min]="today" matInput class="form-control" placeholder="Choose Approve Date" [matDatepicker]="approve_date" readonly>
-                    <mat-datepicker #approve_date></mat-datepicker>
-                </mat-form-field>
-            </div>
-            <div class="col-md-1 pl-0 ml-0"><mat-datepicker-toggle matSuffix [for]="approve_date"></mat-datepicker-toggle></div>
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="col-md-4 mt-2 text-right"><label>Remark : </label></div>
-        <div class="col-md-6">
-            <input [(ngModel)]="form.remark" class="form-control" placeholder="Enter Remark" />
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="col-md-4 mt-2 text-right"><label>Status : </label></div>
-        <div class="col-md-6">
-            <select [(ngModel)]="form.status" class="form-control">
-                <option value="" disabled>--- Select One ---</option>
-                <option value="{{ option.value }}" *ngFor="let option of statusOptions">{{ option.text }}</option>
-            </select>
-        </div>
-    </div>
-    <div *ngIf="submitted && !form.status" class="row p-0 mx-0">
+    <div *ngIf="submitted && !form.pending_date" class="row p-0 mx-0">
         <div class="col-md-4"></div>
-        <div class="col-md-6 error-text">Status is required !</div>
+        <div class="col-md-6 error-text">กรุณาเลือกวันที่หน้าเช็ค !</div>
     </div>
 </div>
 <div class="modal-footer">
     <div class="p-0 col-md-2">
-        <button type="button" class="btn btn-default" style="border: 1px solid #cccccc; width: 100%;" (click)="closeBtn()">Close</button>
+        <button type="button" class="btn btn-default" style="border: 1px solid #cccccc; width: 100%;" (click)="closeBtn()">ปิด</button>
     </div>
     <div class="p-0 col-md-2">
-        <button type="button" class="btn-submit" (click)="saveBtn()">Save</button>
+        <button type="button" class="btn-submit" (click)="saveBtn()">บันทึก</button>
     </div>
 </div>

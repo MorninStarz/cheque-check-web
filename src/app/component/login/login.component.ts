@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
   submitted = false;
 
   ngOnInit(): void {  
-    const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     if (!isEmpty(userInfo) && userInfo.token) {
       this.router.navigate(['home']);
     }
@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
     try {
       this.loginService.auhenticate(this.form).then(res => {
         if (res && res.data) {
-          sessionStorage.setItem('userInfo', JSON.stringify(res.data));
+          localStorage.setItem('userInfo', JSON.stringify(res.data));
           this.router.navigate(['home']);
         }
       });

@@ -23,14 +23,10 @@ export class CustomerComponent implements OnInit {
 
   form: CustomerForm = new CustomerForm();
   fields: Array<string> = [
-    'No.',
-    'Customer Name',
-    'Mobile',
-    'Expect Amount',
-    'Actual Amount',
-    'Due Date',
-    'Create Date',
-    'Update Date'
+    'ลำดับ',
+    'ชื่อ',
+    'สร้างโดย',
+    'แก้ไขโดย'
   ];
   error = {
     mobile_no: false,
@@ -49,31 +45,10 @@ export class CustomerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     const permission = _.get(userInfo, 'permission');
     this.permission.canEdit = permission?.edit_permission?.includes('customer');
     this.permission.canDelete = permission?.delete_permission?.includes('customer');
-  }
-
-  validate() {
-    let valid = true;
-    this.error = {
-      mobile_no: false,
-      start_date: false,
-      end_date: false
-    }
-    if (isNaN(+this.form.mobile)) {
-      this.error.mobile_no = true;
-      valid = false;
-    }
-    if (this.form.start_date && this.form.end_date) {
-      if (moment(this.form.start_date).isAfter(moment(this.form.end_date))) {
-        this.error.start_date = true;
-        this.error.end_date = true;
-        valid = false;
-      }
-    }
-    return valid;
   }
 
   pagination(page: number) {
@@ -82,9 +57,6 @@ export class CustomerComponent implements OnInit {
   }
 
   async searchBtn() {
-    if (!this.validate()) {
-      return;
-    }
     try {
       const skip = this.page * this.limit;
       const res = await this.customerService.searchCustomer(this.form, skip);
@@ -96,20 +68,15 @@ export class CustomerComponent implements OnInit {
             no: (i + 1) + (this.page * this.limit),
             customer_id: _.get(e, 'customer_id'),
             name: _.get(e, 'name'),
-            lastname: _.get(e, 'lastname'),
-            mobile: _.get(e, 'mobile'),
-            expect: _.get(e, 'expect_amount'),
-            actual: _.get(e, 'actual_amount'),
-            due_date: _.get(e, 'due_date'),
-            create_date: _.get(e, 'create_date'),
-            update_date: _.get(e, 'update_date')
+            create_by: _.get(e, 'create_by'),
+            update_by: _.get(e, 'update_by')
           });
         });
         this.total = res?.data?.total;
       } else {
         const status = res?.status;
         if (status === 401) {
-          sessionStorage.clear();
+          localStorage.clear();
           window.location.reload();
           return;
         }
@@ -118,7 +85,7 @@ export class CustomerComponent implements OnInit {
     } catch (e) {
       const status = e?.response?.data?.code;
       if (status === 401) {
-        sessionStorage.clear();
+        localStorage.clear();
         window.location.reload();
         return;
       }
@@ -139,54 +106,6 @@ export class CustomerComponent implements OnInit {
 
   dateFormat(date: any) {
     return date ? moment(date).format('DD/MM/YYYY HH:mm:ss') : '-';
-  }
-
-  mapName(name: string, lastname: string) {
-    let fullName = '';
-    if (name) {
-      fullName += name;
-      if (lastname) {
-        fullName += ' ' + lastname;
-      }
-    }
-    if (!fullName) fullName = '-';
-    return fullName;
-  }
-
-  async deleteCustomer(i: number) {
-    Swal.fire({
-      icon: 'question',
-      title: 'Delete Customer',
-      text: 'Are you sure to Delete Customer ?',
-      showConfirmButton: true,
-      showCancelButton: true,
-      confirmButtonText: 'Confirm',
-      reverseButtons: true
-    }).then(async (res) => {
-      if (res.isConfirmed) {
-        const customer_id = _.get(this.items[i], 'customer_id');
-        try {
-          await this.customerService.deleteCustomer(customer_id);
-          Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: 'Customer has successfully deleted',
-            allowEscapeKey: false,
-            allowOutsideClick: false
-          }).then(() => {
-            this.form = new CustomerForm();
-            this.searchBtn();
-          });
-        } catch (e) {
-          if (e.response.data.code === 401) {
-            sessionStorage.clear();
-            window.location.reload();
-            return;
-          }
-          this.errorMsg(e.response.data.message);
-        }
-      }
-    });
   }
 
   showModalAdd() {

@@ -1,0 +1,68 @@
+<div class="row m-0">
+    <div class="col-md-12 p-4">
+        <h2 class="title"><span class="font-weight-bold" style="color: #6b3d00;">บั</span>ญชีผู้ใช้งาน</h2>
+    </div>
+</div>
+<!-- Search Box -->
+<div class="content ml-3 mr-3 search-title row">
+    <div class="col-md-12">ค้นหา</div>
+</div>
+<div class="content ml-3 mr-3 p-4 search-content">
+    <div class="row">
+        <div class="col-md-2 mt-1 text-right p-0"><label>ชื่อบัญชีผู้ใช้ : </label></div>
+        <div class="col-md-4">
+            <input [(ngModel)]="form.username" type="text" class="form-control" placeholder="กรุณาระบุชื่อบัญชีผู้ใช้" autocomplete="off" />
+        </div>
+    </div>
+</div>
+
+<div class="ml-3 mr-3 mt-4 row">
+    <div class="col-md-4"></div>
+    <div class="col-md-2">
+        <button (click)="clearBtn()" class="btn btn-default"
+            style="border: 1px solid #cccccc; width: 100%;">ล้างข้อมูล</button>
+    </div>
+    <div class="col-md-2">
+        <button (click)="searchBtn()" class="btn-submit">ค้นหา</button>
+    </div>
+</div>
+<ng-container *ngIf="is_search">
+    <div *ngIf="permission.canEdit" class="row pr-4">
+        <div class="col-md-10"></div>
+        <div class="col-md-2">
+            <button (click)="showModalAdd()" class="btn-submit">+ เพิ่มบัญชีผู้ใช้</button>
+        </div>
+    </div>
+    <div class="ml-3 mr-3 mt-4 row">
+        <div class="col-md-12 table-responsive">
+            <table class="table">
+                <tr class="table-head">
+                    <th *ngFor="let field of fields">{{ field }}</th>
+                    <!-- <th>Action</th> -->
+                </tr>
+                <ng-container *ngIf="items.length > 0">
+                    <tr *ngFor="let item of items; let i = index;">
+                        <td class="text-center">{{ item.no }}</td>
+                        <td>{{ item.cheque_no || '-' }}</td>
+                        <td>{{ item.customer_name || '-' }}</td>
+                        <td>{{ item.bank_name + '/' + item.branch_name }}</td>
+                        <td class="text-center">{{ item.month }}</td>
+                        <td class="text-right">{{ numberFormat(item.amount) }}</td>
+                        <td class="text-center">{{ dateFormat(item.pending_date) }}</td>
+                        <td class="text-center">{{ dateFormat(item.approve_date) }}</td>
+                        <td class="text-center">{{ dateFormat(item.pass_date) }}</td>
+                        <td class="text-center">{{ mapStatus(item.status) }}</td>
+                        <td class="text-center">{{ item.remark || '-' }}</td>
+                    </tr>
+                </ng-container>
+                <ng-container *ngIf="items.length < 1">
+                    <tr class="text-center">
+                        <td colspan="11">ไม่พบข้อมูล</td>
+                    </tr>
+                </ng-container>
+            </table>
+        </div>
+    </div>
+    <app-pagination *ngIf="items.length > 0" [limit]="limit" [total]="total" (pageEmit)="pagination($event)">
+    </app-pagination>
+</ng-container>

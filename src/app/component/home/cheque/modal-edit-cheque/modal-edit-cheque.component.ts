@@ -125,7 +125,7 @@ export class ModalEditChequeComponent implements OnInit {
           if (this.form.approve_date) req.approve_date = this.form.approve_date;
           if (this.form.remark) req.remark = this.form.remark;
           if (this.form.status) req.status = this.form.status;
-          await this.chequeService.editCheque(req);
+          await this.chequeService.editPendingCheque(req);
           Swal.fire({
             icon: 'success',
             title: 'Success',
@@ -137,7 +137,7 @@ export class ModalEditChequeComponent implements OnInit {
           });
         } catch (e) {
           if (e?.response?.data?.code === 401) {
-            sessionStorage.clear();
+            localStorage.clear();
             window.location.reload();
             return;
           }

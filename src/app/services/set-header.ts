@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const getAxios = () => {
-    const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     const res = { ...axios };
     res.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
     res.defaults.headers.common['Access-Control-Allow-Headers'] = '*';

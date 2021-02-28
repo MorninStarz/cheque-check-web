@@ -1,0 +1,18 @@
+input:read-only {
+    background-color: #ffffff;
+}
+.form-control:disabled {
+    background-color: #e9ecef !important;
+}
+.has-error {
+    border-color: #fe4f4f;
+    box-shadow: 0 0 0 0.2rem rgba($color: #fe4f4f, $alpha: 0.25);
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.pointer:hover {
+    background-color: lighten(#6b3d00, 25%);
+}

@@ -4,9 +4,10 @@ import { HomeComponent } from './home.component';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CustomerComponent } from './customer/customer.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { MatAutocompleteModule } from '@angular/material/autocomplete'
 import { ModalAddComponent } from './customer/modal-add/modal-add.component';
 import { ModalEditComponent } from './customer/modal-edit/modal-edit.component';
 import { ModalAddBankComponent } from './bank/modal-add-bank/modal-add-bank.component';
@@ -17,10 +18,14 @@ import { ModalEditBankComponent } from './bank/modal-edit-bank/modal-edit-bank.c
 import { ChequeComponent } from './cheque/cheque.component';
 import { ModalAddChequeComponent } from './cheque/modal-add-cheque/modal-add-cheque.component';
 import { ModalEditChequeComponent } from './cheque/modal-edit-cheque/modal-edit-cheque.component';
-import { TransactionComponent } from './transaction/transaction.component';
-import { AccountComponent } from './account/account.component';
-import { CashComponent } from './cash/cash.component';
-import { ModalAddCashComponent } from './cash/modal-add-cash/modal-add-cash.component';
+import { WaitingChequeComponent } from './waiting-cheque/waiting-cheque.component';
+import { ApproveChequeComponent } from './approve-cheque/approve-cheque.component';
+import { TransferComponent } from './transfer/transfer.component';
+import { ModalAddTransferComponent } from './transfer/modal-add-transfer/modal-add-transfer.component';
+import { TransferredComponent } from './transferred/transferred.component';
+import { FinancialComponent } from './financial/financial.component';
+import { FinancialMemoComponent } from './financial-memo/financial-memo.component';
+import { UserComponent } from './user/user.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent }
@@ -40,16 +45,16 @@ const routes: Routes = [
     ModalEditBankComponent, 
     ChequeComponent, 
     ModalAddChequeComponent, 
-    ModalEditChequeComponent, 
-    TransactionComponent, 
-    AccountComponent, CashComponent, ModalAddCashComponent
+    ModalEditChequeComponent, WaitingChequeComponent, ApproveChequeComponent, TransferComponent, ModalAddTransferComponent, TransferredComponent, FinancialComponent, FinancialMemoComponent, UserComponent,
   ],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
     FormsModule,
+    ReactiveFormsModule,
     MatDatepickerModule,
-    MatMomentDateModule
+    MatMomentDateModule,
+    MatAutocompleteModule
   ],
   exports: [RouterModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

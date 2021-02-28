@@ -52,7 +52,7 @@ export class DashboardComponent implements OnInit {
     } catch (e) {
       const status = e?.response?.data?.code;
       if (status === 401) {
-        sessionStorage.clear();
+        localStorage.clear();
         window.location.reload();
         return;
       }

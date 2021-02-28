@@ -1,0 +1,51 @@
+<div class="modal-header align-middle">
+    <h4 class="modal-title">เพิ่มข้อมูลการโอน</h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeBtn()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-4 mt-2 text-right"><label>ชื่อลูกค้า : </label></div>
+        <div class="col-md-6">
+            <mat-form-field class="customer_field">
+                <input type="text" [formControl]="customer" placeholder="กรุณาเลือกชื่อลูกค้า" class="form-control" matInput [matAutocomplete]="customerAuto">
+                <mat-autocomplete #customerAuto="matAutocomplete">
+                    <mat-option *ngFor="let option of customerFilter | async" [value]="option.text">
+                        {{ option.text }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+    </div>
+    <div *ngIf="submitted && !form.customer_id" class="row p-0 mx-0">
+        <div class="col-md-4"></div>
+        <div class="col-md-6 error-text">กรุณาเลือกชื่อลูกค้า !</div>
+    </div>
+    <div *ngIf="submitted && error.customer_id" class="row p-0 mx-0">
+        <div class="col-md-4"></div>
+        <div class="col-md-6 error-text">ไม่พบชื่อลูกค้าที่เลือก !</div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-md-4 mt-2 text-right"><label>จำนวนเงิน : </label></div>
+        <div class="col-md-6">
+            <input [(ngModel)]="form.amount" class="form-control" placeholder="กรุณากรอกจำนวนเงิน" />
+        </div>
+    </div>
+    <div *ngIf="submitted && !form.amount" class="row p-0 mx-0">
+        <div class="col-md-4"></div>
+        <div class="col-md-6 error-text">กรุณากรอกจำนวนเงิน !</div>
+    </div>
+    <div *ngIf="submitted && error.amount" class="row p-0 mx-0">
+        <div class="col-md-4"></div>
+        <div class="col-md-6 error-text">กรุณากรอกตัวเลข !</div>
+    </div>
+</div>
+<div class="modal-footer">
+    <div class="p-0 col-md-2">
+        <button type="button" class="btn btn-default" style="border: 1px solid #cccccc; width: 100%;" (click)="closeBtn()">ปิด</button>
+    </div>
+    <div class="p-0 col-md-2">
+        <button type="button" class="btn-submit" (click)="saveBtn()">บันทึก</button>
+    </div>
+</div>

@@ -1,162 +1,149 @@
 <div class="row m-0">
     <div class="col-md-12 p-4">
-        <h2 class="title"><span class="font-weight-bold" style="color: #6b3d00;">C</span>heque</h2>
+        <h2 class="title"><span class="font-weight-bold" style="color: #6b3d00;">เ</span>ช็คที่เก็บลูกค้ามา</h2>
     </div>
 </div>
 <!-- Search Box -->
-<div class="content ml-3 mr-3 search-title row"><div class="col-md-12">Search</div></div>
+<div class="content ml-3 mr-3 search-title row">
+    <div class="col-md-12">ค้นหา</div>
+</div>
 <div class="content ml-3 mr-3 p-4 search-content">
     <div class="row">
-        <div class="col-md-2 mt-1 text-right p-0"><label>Cheque No. : </label></div>
+        <div class="col-md-2 mt-1 text-right p-0"><label>เลขที่เช็ค : </label></div>
         <div class="col-md-4">
-            <input [(ngModel)]="form.cheque_no" type="text" class="form-control" placeholder="Enter Cheque No." autocomplete="off" />
+            <input [(ngModel)]="form.cheque_no" (ngModelChange)="error.cheque_no = false" type="text"
+                class="form-control" placeholder="กรุณาระบุเลขที่เช็ค" autocomplete="off" />
         </div>
-        <div class="row m-0 p-0" *ngIf="error.cheque_no">
-            <div class="col-md-7"></div>
-            <div class="col-md-4 error-text">Accept only number !</div>
-        </div>
-        <div class="col-md-1 mt-1 text-right p-0"><label>Customer Name : </label></div>
+        <div class="col-md-1 mt-1 text-right p-0"><label>ชื่อลูกค้า : </label></div>
         <div class="col-md-4">
-            <select [(ngModel)]="form.customer_id" class="form-control">
-                <option value="" disabled>--- Select One ---</option>
-                <option value="{{ option.value }}" *ngFor="let option of customerOptions">{{ option.text }}</option>
-            </select>
+            <mat-form-field class="customer_field">
+                <input type="text" [formControl]="customer" placeholder="กรุณาเลือกชื่อลูกค้า" class="form-control"
+                    matInput [matAutocomplete]="customerAuto">
+                <mat-autocomplete #customerAuto="matAutocomplete">
+                    <mat-option *ngFor="let option of customerFilter | async" [value]="option.text">
+                        {{ option.text }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
         </div>
     </div>
+    <div class="row m-0 p-0">
+        <div class="col-md-2"></div>
+        <div class="col-md-4 error-text">{{ error.cheque_no ? 'กรุณากรอกตัวเลข !' : '' }}</div>
+        <div class="col-md-1"></div>
+        <div class="col-md-4 error-text">{{ error.customer_id ? 'ไม่พบชื่อลูกค้าที่เลือก !' : '' }}</div>
+    </div>
     <div class="row mt-3">
-        <div class="col-md-2 mt-1 text-right p-0"><label>Bank : </label></div>
+        <div class="col-md-2 mt-1 text-right p-0"><label>ธนาคาร : </label></div>
         <div class="col-md-4">
             <select [(ngModel)]="form.bank_id" (change)="onChangeBank()" class="form-control">
-                <option value="" disabled>--- Select One ---</option>
+                <option value="" disabled>--- กรุณาเลือก ---</option>
                 <option value="{{ option.value }}" *ngFor="let option of bankOptions">{{ option.text }}</option>
             </select>
         </div>
-        <div class="col-md-1 mt-1 pl-0 text-right p-0"><label>Branch : </label></div>
+        <div class="col-md-1 mt-1 pl-0 text-right p-0"><label>สาขา : </label></div>
         <div class="col-md-4">
-            <select [(ngModel)]="form.branch_id" class="form-control" [disabled]="!branchOptions || branchOptions.length === 0">
-                <option value="" disabled>--- Select One ---</option>
+            <select [(ngModel)]="form.branch_id" class="form-control"
+                [disabled]="!branchOptions || branchOptions.length === 0">
+                <option value="" disabled>--- กรุณาเลือก ---</option>
                 <option value="{{ option.value }}" *ngFor="let option of branchOptions">{{ option.text }}</option>
             </select>
         </div>
     </div>
     <div class="row mt-3">
-        <div class="col-md-2 mt-1 text-right p-0"><label>Pending Date From : </label></div>
+        <div class="col-md-2 mt-1 text-right p-0"><label>วันที่หน้าเช็ค จาก : </label></div>
         <div class="row col-md-4">
             <div class="col-md-11 pr-0 mr-0">
                 <mat-form-field>
-                    <input [(ngModel)]="form.pending_date_from" matInput class="form-control" placeholder="Choose Date From" [matDatepicker]="pending_date_from" readonly>
+                    <input [(ngModel)]="form.pending_date_from" (click)="pending_date_from.open()" matInput class="form-control" placeholder="เลือกวันที่"
+                        [matDatepicker]="pending_date_from" readonly>
                     <mat-datepicker #pending_date_from></mat-datepicker>
                 </mat-form-field>
             </div>
-            <div class="col-md-1 pl-0 ml-0"><mat-datepicker-toggle matSuffix [for]="pending_date_from"></mat-datepicker-toggle></div>
+            <div class="col-md-1 pl-0 ml-0">
+                <mat-datepicker-toggle matSuffix [for]="pending_date_from"></mat-datepicker-toggle>
+            </div>
         </div>
-        <div class="col-md-1 mt-1 ml-4 mr-2 p-0 text-right"><label>Pending Date To : </label></div>
+        <div class="col-md-1 mt-1 ml-4 mr-2 p-0 text-right"><label>ถึง : </label></div>
         <div class="row col-md-4">
             <div class="col-md-11 pr-0 mr-0">
                 <mat-form-field>
-                    <input [(ngModel)]="form.pending_date_to" matInput class="form-control" placeholder="Choose Date To" [matDatepicker]="pending_date_to" readonly>
+                    <input [(ngModel)]="form.pending_date_to" (click)="pending_date_to.open()" matInput class="form-control" placeholder="เลือกวันที่"
+                        [matDatepicker]="pending_date_to" readonly>
                     <mat-datepicker #pending_date_to></mat-datepicker>
                 </mat-form-field>
             </div>
-            <div class="col-md-1 pl-0 ml-0"><mat-datepicker-toggle matSuffix [for]="pending_date_to"></mat-datepicker-toggle></div>
+            <div class="col-md-1 pl-0 ml-0">
+                <mat-datepicker-toggle matSuffix [for]="pending_date_to"></mat-datepicker-toggle>
+            </div>
         </div>
     </div>
     <div class="row m-0 p-0" *ngIf="error.pending_date_from || error.pending_date_to">
         <div class="col-md-2"></div>
-        <div class="col-md-4 error-text">Date from must be after Date to !</div>
+        <div class="col-md-4 error-text">วันที่ไม่ถูกต้อง !</div>
         <div class="col-md-1"></div>
-        <div class="col-md-4 error-text">Date To must be before Date from !</div>
+        <div class="col-md-4 error-text">วันที่ไม่ถูกต้อง !</div>
     </div>
-    <div class="row mt-3 mb-3">
-        <div class="col-md-2 mt-1 text-right p-0"><label>Approve Date From : </label></div>
-        <div class="row col-md-4">
-            <div class="col-md-11 pr-0 mr-0">
-                <mat-form-field>
-                    <input [(ngModel)]="form.approve_date_from" matInput class="form-control" placeholder="Choose Date From" [matDatepicker]="approve_date_from" readonly>
-                    <mat-datepicker #approve_date_from></mat-datepicker>
-                </mat-form-field>
-            </div>
-            <div class="col-md-1 pl-0 ml-0"><mat-datepicker-toggle matSuffix [for]="approve_date_from"></mat-datepicker-toggle></div>
-        </div>
-        <div class="col-md-1 mt-1 ml-4 mr-2 p-0 text-right"><label>Approve Date To : </label></div>
-        <div class="row col-md-4">
-            <div class="col-md-11 pr-0 mr-0">
-                <mat-form-field>
-                    <input [(ngModel)]="form.approve_date_to" matInput class="form-control" placeholder="Choose Date To" [matDatepicker]="approve_date_to" readonly>
-                    <mat-datepicker #approve_date_to></mat-datepicker>
-                </mat-form-field>
-            </div>
-            <div class="col-md-1 pl-0 ml-0"><mat-datepicker-toggle matSuffix [for]="approve_date_to"></mat-datepicker-toggle></div>
-        </div>
-    </div>
-    <div class="row m-0 p-0" *ngIf="error.approve_date_from || error.approve_date_to">
-        <div class="col-md-2"></div>
-        <div class="col-md-4 error-text">Date from must be after Date to !</div>
-        <div class="col-md-1"></div>
-        <div class="col-md-4 error-text">Date To must be before Date from !</div>
-    </div>
-    <div class="row">
-        <div class="col-md-2 mt-1 text-right p-0"><label>Amount : </label></div>
+    <div class="row mt-3">
+        <div class="col-md-2 mt-1 text-right p-0"><label>จำนวนเงิน : </label></div>
         <div class="col-md-4">
-            <input [(ngModel)]="form.amount" type="text" class="form-control" placeholder="Enter Amount" autocomplete="off" />
-        </div>
-        <div class="col-md-1 mt-2 p-0 text-right p-0"><label>Status : </label></div>
-        <div class="col-md-4">
-            <select [(ngModel)]="form.status" class="form-control">
-                <option value="" disabled>--- Select One ---</option>
-                <option value="{{ option.value }}" *ngFor="let option of statusOptions">{{ option.text }}</option>
-            </select>
+            <input [(ngModel)]="form.amount" type="text" class="form-control" placeholder="กรุณากรอกจำนวนเงิน"
+                autocomplete="off" />
         </div>
     </div>
     <div class="row m-0 p-0" *ngIf="error.amount">
         <div class="col-md-2"></div>
-        <div class="col-md-4 error-text">Accept only number !</div>
+        <div class="col-md-4 error-text">กรุณากรอกตัวเลข !</div>
     </div>
 </div>
 
 <div class="ml-3 mr-3 mt-4 row">
     <div class="col-md-4"></div>
     <div class="col-md-2">
-        <button (click)="clearBtn()" class="btn btn-default" style="border: 1px solid #cccccc; width: 100%;">Clear</button>
+        <button (click)="clearBtn()" class="btn btn-default"
+            style="border: 1px solid #cccccc; width: 100%;">ล้างข้อมูล</button>
     </div>
     <div class="col-md-2">
-        <button (click)="searchBtn()" class="btn-submit">Search</button>
+        <button (click)="searchBtn()" class="btn-submit">ค้นหา</button>
     </div>
 </div>
 <ng-container *ngIf="is_search">
     <div *ngIf="permission.canEdit" class="row pr-4">
         <div class="col-md-10"></div>
         <div class="col-md-2">
-            <button (click)="showModalAdd()" class="btn-submit">+ Cheque</button>
+            <button (click)="showModalAdd()" class="btn-submit">+ เพิ่มข้อมูลเช็ค</button>
         </div>
     </div>
     <div class="ml-3 mr-3 mt-4 row">
-        <table class="table">
-            <tr><th *ngFor="let field of fields">{{ field }}</th><th>Action</th></tr>
-            <ng-container *ngIf="items.length > 0">
-                <tr *ngFor="let item of items; let i = index;">
-                    <td>{{ item.no }}</td>
-                    <td>{{ item.cheque_no || '-' }}</td>
-                    <td>{{ mapName(item.customer_name, item.customer_lastname) || '-' }}</td>
-                    <td>{{ item.bank_name + '/' + item.branch_name }}</td>
-                    <td>{{ item.month }}</td>
-                    <td>{{ numberFormat(item.amount) }}</td>
-                    <td>{{ dateFormat(item.pending_date) }}</td>
-                    <td>{{ dateFormat(item.approve_date) }}</td>
-                    <td>{{ item.remark || '-' }}</td>
-                    <td>{{ item.status || '-' }}</td>
-                    <td>
-                        <img *ngIf="permission.canEdit && item.status !== 'Approved'" (click)="showModalEdit(i)" 
-                            style="cursor: pointer;" src="../../../../assets/edit.png" />
-                        <img *ngIf="permission.canDelete" (click)="deleteCustomer(i)" 
-                            style="cursor: pointer;" src="../../../../assets/delete.png" />
-                    </td>
+        <div class="col-md-12 table-responsive">
+            <table class="table">
+                <tr class="table-head">
+                    <th *ngFor="let field of fields">{{ field }}</th>
+                    <!-- <th>Action</th> -->
                 </tr>
-            </ng-container>
-            <ng-container *ngIf="items.length < 1">
-                <tr class="text-center"><td colspan="11">No item found</td></tr>
-            </ng-container>
-        </table>
+                <ng-container *ngIf="items.length > 0">
+                    <tr *ngFor="let item of items; let i = index;">
+                        <td class="text-center">{{ item.no }}</td>
+                        <td>{{ item.cheque_no || '-' }}</td>
+                        <td>{{ item.customer_name || '-' }}</td>
+                        <td>{{ item.bank_name + '/' + item.branch_name }}</td>
+                        <td class="text-center">{{ item.month }}</td>
+                        <td class="text-right">{{ numberFormat(item.amount) }}</td>
+                        <td class="text-center">{{ dateFormat(item.pending_date) }}</td>
+                        <td class="text-center">{{ dateFormat(item.approve_date) }}</td>
+                        <td class="text-center">{{ dateFormat(item.pass_date) }}</td>
+                        <td class="text-center">{{ mapStatus(item.status) }}</td>
+                        <td class="text-center">{{ item.remark || '-' }}</td>
+                    </tr>
+                </ng-container>
+                <ng-container *ngIf="items.length < 1">
+                    <tr class="text-center">
+                        <td colspan="11">ไม่พบข้อมูล</td>
+                    </tr>
+                </ng-container>
+            </table>
+        </div>
     </div>
-    <app-pagination *ngIf="items.length > 0" [limit]="limit" [total]="total" (pageEmit)="pagination($event)"></app-pagination>    
+    <app-pagination *ngIf="items.length > 0" [limit]="limit" [total]="total" (pageEmit)="pagination($event)">
+    </app-pagination>
 </ng-container>

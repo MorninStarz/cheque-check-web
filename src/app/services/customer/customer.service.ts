@@ -4,6 +4,7 @@ import { config } from '../../../environments/environment';
 import * as _ from 'lodash';
 import { ModalAddForm } from 'src/app/component/home/customer/modal-add/modal-add';
 import { getAxios } from '../set-header';
+import { FinancialForm } from 'src/app/component/home/financial/financial';
 
 @Injectable({
   providedIn: 'root'
@@ -22,25 +23,25 @@ export class CustomerService {
   public async searchCustomer(form: CustomerForm, skip: number) {
     const axios = getAxios();
     const url = _.get(config, 'service.url');
-    let req;
+    let req: any = {};
     if (form.name) req.name = form.name;
-    if (form.lastname) req.lastname = form.lastname;
-    if (form.mobile) req.mobile = form.mobile;
-    if (form.account_no) req.account_no = form.account_no;
-    if (form.start_date) req.start_date = form.start_date;
-    if (form.end_date) req.end_date = form.end_date;
-    if (req) {
-      req.$skip = skip;
-      const res = await axios.get(url + '/customer-search', {
-        params: req
-      });
-      return res;
-    } else {
-      const res = await axios.get(url + '/customer', {
-        params: { $skip: skip }
-      });
-      return res;
-    }
+    req.$skip = skip;
+    const res = await axios.get(url + '/customer-search', {
+      params: req
+    });
+    return res;
+  }
+
+  public async searchFinancialCustomer(form: FinancialForm, skip: number) {
+    const axios = getAxios();
+    const url = _.get(config, 'service.url');
+    let req: any = {};
+    if (form.customer_id) req.customer_id = form.customer_id;
+    req.$skip = skip;
+    const res = await axios.get(url + '/customer-search', {
+      params: req
+    });
+    return res;
   }
 
   public async createCustomer(form: ModalAddForm) {

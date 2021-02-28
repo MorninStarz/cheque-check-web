@@ -6,7 +6,4 @@ export class AddChequeForm {
     month: string = '';
     amount: string = '';
     pending_date: any = '';
-    approve_date: any = '';
-    remark: string = '';
-    status: 'Waiting' | 'Pending' | 'Approved' | '' = '';
 }

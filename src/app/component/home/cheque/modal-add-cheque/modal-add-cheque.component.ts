@@ -6,6 +6,9 @@ import { DDL } from '../cheque';
 import { AddChequeForm } from './modal-add-cheque';
 import * as _ from 'lodash';
 import Swal from 'sweetalert2';
+import { Observable } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-modal-add-cheque',
@@ -18,6 +21,8 @@ export class ModalAddChequeComponent implements OnInit {
 
   @Input() customerOptions: DDL[];
   @Input() bankOptions: DDL[];
+  customer: FormControl = new FormControl();
+  customerFilter: Observable<DDL[]>;
   branchOptions: DDL[];
   statusOptions: DDL[] = [
     { value: 'Waiting', text: 'Waiting' },
@@ -26,16 +31,18 @@ export class ModalAddChequeComponent implements OnInit {
   ];
   form: AddChequeForm = new AddChequeForm();
   error = {
+    customer_id: false,
     cheque_no: false,
     amount: false,
-    pending_date: false,
-    approve_date: false
+    pending_date: false
   };
-  today: Date = new Date();
   submitted = false;
 
   ngOnInit(): void {
-    
+    this.customerFilter = this.customer.valueChanges.pipe(
+      startWith(''),
+      map(value => this.customerOptions.filter(option => option.text.includes(value)))
+    );
   }
 
   async onChangeBankName() {
@@ -53,14 +60,17 @@ export class ModalAddChequeComponent implements OnInit {
   }
 
   validate() {
+    this.clearError();
     this.submitted = true;
-    this.error = {
-      cheque_no: false,
-      amount: false,
-      pending_date: false,
-      approve_date: false
-    };
     let valid = true;
+    if (this.customer.value) {
+      const option = this.customerOptions.filter(e => e.text === this.customer.value);
+      if (option && Array.isArray(option) && option.length > 0) this.form.customer_id = option[0].value;
+      else {
+        this.error.customer_id = true;
+        valid = false;
+      }
+    } else valid = false;
     if (!this.form.cheque_no) valid = false;
     else if (isNaN(+this.form.cheque_no)) {
       valid = false;
@@ -74,7 +84,7 @@ export class ModalAddChequeComponent implements OnInit {
       valid = false;
       this.error.amount = true;
     }
-    if (!this.form.status) valid = false;
+    if (!this.form.pending_date) valid = false;
     return valid;
   }
 
@@ -82,11 +92,12 @@ export class ModalAddChequeComponent implements OnInit {
     if (!this.validate()) return;
     Swal.fire({
       icon: 'question',
-      title: 'Add Cheque',
-      text: 'Are you sure to Add Cheque ?',
+      title: 'เพิ่มเช็ค',
+      text: 'ต้องการเพิ่มเช็คหรือไม่ ?',
       showConfirmButton: true,
       showCancelButton: true,
-      confirmButtonText: 'Confirm',
+      confirmButtonText: 'ตกลง',
+      cancelButtonText: 'ยกเลิก',
       reverseButtons: true
     }).then(async (res) => {
       if (res.isConfirmed) {
@@ -94,8 +105,8 @@ export class ModalAddChequeComponent implements OnInit {
           await this.chequeService.addCheque(this.form);
           Swal.fire({
             icon: 'success',
-            title: 'Success',
-            text: 'Cheque has successfully created',
+            title: 'สำเร็จ',
+            text: 'เพิ่มเช็คสำเร็จ',
             allowEscapeKey: false,
             allowOutsideClick: false
           }).then(() => {
@@ -103,13 +114,13 @@ export class ModalAddChequeComponent implements OnInit {
           });
         } catch (e) {
           if (e?.response?.data?.code === 401) {
-            sessionStorage.clear();
+            localStorage.clear();
             window.location.reload();
             return;
           }
           Swal.fire({
             icon: 'error',
-            title: 'Error',
+            title: 'ผิดพลาด',
             text: e?.response?.data?.message || e?.message
           });
         }
@@ -117,9 +128,19 @@ export class ModalAddChequeComponent implements OnInit {
     });
   }
 
+  clearError() {
+    this.error = {
+      customer_id: false,
+      cheque_no: false,
+      amount: false,
+      pending_date: false
+    };
+  }
+
   closeBtn() {
     this.form = new AddChequeForm();
     this.submitted = false;
+    this.clearError();
     this.activeModal.close();
   }
 

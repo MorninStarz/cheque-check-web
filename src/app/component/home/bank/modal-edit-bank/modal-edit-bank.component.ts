@@ -24,6 +24,7 @@ export class ModalEditBankComponent implements OnInit {
   showAdd = false;
 
   ngOnInit(): void {
+    console.log(this.bank)
     this.form.bank_id = _.get(this.bank, 'data.bank_id');
     this.form.bank_name = _.get(this.bank, 'data.bank_name');
     const branches: any = _.get(this.bank, 'data.branches');
@@ -59,11 +60,11 @@ export class ModalEditBankComponent implements OnInit {
     if (!this.validate()) return;
     Swal.fire({
       icon: 'question',
-      title: 'Edit Bank',
-      text: 'Are you sure to Edit Bank ?',
+      title: 'แก้ไขข้อมูลธนาคาร',
+      text: 'ต้องการแก้ไขข้อมูลธนาคารหรือไม่ ?',
       showConfirmButton: true,
       showCancelButton: true,
-      confirmButtonText: 'Confirm',
+      confirmButtonText: 'ตกลง',
       reverseButtons: true
     }).then(async (res) => {
       if (res.isConfirmed) {
@@ -83,8 +84,8 @@ export class ModalEditBankComponent implements OnInit {
           await this.bankService.editBank(req);
           Swal.fire({
             icon: 'success',
-            title: 'Success',
-            text: 'Bank has successfully edited',
+            title: 'สำเร็จ',
+            text: 'แก้ไขข้อมูลธนาคารสำเร็จ',
             allowEscapeKey: false,
             allowOutsideClick: false
           }).then(() => {
@@ -92,13 +93,13 @@ export class ModalEditBankComponent implements OnInit {
           });
         } catch (e) {
           if (e.response.data.code === 401) {
-            sessionStorage.clear();
+            localStorage.clear();
             window.location.reload();
             return;
           }
           Swal.fire({
             icon: 'error',
-            title: 'Error',
+            title: 'ผิดพลาด',
             text: e.response.data.message
           });
         }

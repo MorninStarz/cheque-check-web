@@ -11,7 +11,7 @@ import { getAxios } from '../set-header';
 })
 export class BankService {
 
-  userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+  userInfo = JSON.parse(localStorage.getItem('userInfo'));
   url: string;
 
   constructor() { 
@@ -26,8 +26,17 @@ export class BankService {
 
   public async searchBank(form: BankForm, skip: number) {
     const axios = getAxios();
+    let params: any = { 
+      $skip: skip 
+    }
+    if (form.bank_name) {
+      params.bank_name = form.bank_name
+    }
+    if (form.branch_name) {
+      params.branch_name = form.branch_name
+    }
     const res = await axios.get(this.url + '/bank', {
-      params: { ...form, $skip: skip }
+      params: params
     });
     return res;
   }

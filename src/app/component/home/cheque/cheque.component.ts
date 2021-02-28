@@ -11,6 +11,9 @@ import { ChequeService } from 'src/app/services/cheque/cheque.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalAddChequeComponent } from './modal-add-cheque/modal-add-cheque.component';
 import { ModalEditChequeComponent } from './modal-edit-cheque/modal-edit-cheque.component';
+import { FormControl } from '@angular/forms';
+import { map, startWith } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-cheque',
@@ -23,22 +26,24 @@ export class ChequeComponent implements OnInit {
     private bankService: BankService, private branchService: BranchService,
     private chequeService: ChequeService, private modalService: NgbModal) {
     try {
-      const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
       const permission = userInfo?.permission;
-      this.permission.canEdit = permission?.edit_permission?.includes('customer');
-      this.permission.canDelete = permission?.delete_permission?.includes('customer');
+      this.permission.canEdit = permission?.edit_permission?.includes('cheque');
+      this.permission.canDelete = permission?.delete_permission?.includes('cheque');
       this.getCustomerDDL();
       this.getBankDDL();
     } catch (e) {
       if (e?.response?.data?.code === 401) {
-        sessionStorage.clear();
+        localStorage.clear();
         window.location.reload();
         return;
       }
     }
   }
 
+  customer: FormControl = new FormControl();
   customerOptions: DDL[] = [];
+  customerFilter: Observable<DDL[]>;
   bankOptions: DDL[] = [];
   branchOptions: DDL[] = [];
   statusOptions: DDL[] = [
@@ -49,6 +54,7 @@ export class ChequeComponent implements OnInit {
   form: ChequeForm = new ChequeForm();
   today: Date = new Date();
   error = {
+    customer_id: false,
     cheque_no: false,
     pending_date_from: false,
     pending_date_to: false,
@@ -57,16 +63,17 @@ export class ChequeComponent implements OnInit {
     amount: false
   }
   fields: Array<string> = [
-    'No.',
-    'Cheque No.',
-    'Customer Name',
-    'Bank/Branch',
-    'Month',
-    'Amount',
-    'Pending Date',
-    'Approve Date',
-    'Remark',
-    'Status'
+    'เลขที่',
+    'เลขที่เช็ค',
+    'ชื่อลูกค้า',
+    'ธนาคาร/สาขา',
+    'เดือน',
+    'จำนวนเงิน',
+    'วันที่หน้าเช็ค',
+    'วันที่นำเช็คเข้า',
+    'วันที่เช็คผ่าน',
+    'สถานะ',
+    'หมายเหตุ'
   ];
   items: Array<ChequeItem> = [];
   page: number = 0;
@@ -79,7 +86,12 @@ export class ChequeComponent implements OnInit {
     canDelete: false
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.customerFilter = this.customer.valueChanges.pipe(
+      startWith(''),
+      map(value => this.customerOptions.filter(option => option.text.includes(value)))
+    );
+  }
 
   async getCustomerDDL() {
     try {
@@ -89,13 +101,14 @@ export class ChequeComponent implements OnInit {
         res.data.forEach(e => {
           this.customerOptions.push({
             value: e?.customer_id,
-            text: this.mapName(e?.name, e?.lastname)
+            text: e?.name
           });
         });
       }
+      this.customer.setValue('');
     } catch (e) {
       if (e?.response?.data?.code === 401) {
-        sessionStorage.clear();
+        localStorage.clear();
         window.location.reload();
         return;
       }
@@ -138,11 +151,7 @@ export class ChequeComponent implements OnInit {
   }
 
   dateFormat(date: any) {
-    return date ? moment(date).format('DD/MM/YYYY HH:mm:ss') : '-';
-  }
-
-  mapName(name, lastname) {
-    return name ? lastname ? `${name} ${lastname}` : name : lastname ? lastname : '-';
+    return date ? moment(date).format('DD/MM/YYYY') : '-';
   }
 
   pagination(page: number) {
@@ -151,8 +160,17 @@ export class ChequeComponent implements OnInit {
   }
 
   validate() {
+    this.clearError();
     this.submitted = true;
     let valid = true;
+    if (this.customer.value) {
+      const option = this.customerOptions.filter(e => e.text === this.customer.value);
+      if (option && Array.isArray(option) && option.length > 0) this.form.customer_id = option[0].value;
+      else {
+        this.error.customer_id = true;
+        valid = false;
+      }
+    }
     if (this.form.cheque_no && isNaN(+this.form.cheque_no)) {
       this.error.cheque_no = true;
       valid = false;
@@ -164,11 +182,6 @@ export class ChequeComponent implements OnInit {
     if (this.form.pending_date_from && this.form.pending_date_to && moment(this.form.pending_date_from).isAfter(moment(this.form.pending_date_to))) {
       this.error.pending_date_from = true;
       this.error.pending_date_to = true;
-      valid = false;
-    }
-    if (this.form.approve_date_from && this.form.approve_date_to && moment(this.form.approve_date_from).isAfter(moment(this.form.approve_date_to))) {
-      this.error.approve_date_from = true;
-      this.error.approve_date_to = true;
       valid = false;
     }
     return valid;
@@ -186,21 +199,18 @@ export class ChequeComponent implements OnInit {
       if (this.form.branch_id) req.branch_id = this.form.branch_id;
       if (this.form.pending_date_from) req.pending_date_from = this.form.pending_date_from;
       if (this.form.pending_date_to) req.pending_date_to = this.form.pending_date_to;
-      if (this.form.approve_date_from) req.approve_date_from = this.form.approve_date_from;
-      if (this.form.approve_date_to) req.approve_date_to = this.form.approve_date_to;
       if (this.form.amount) req.amount = this.form.amount;
-      if (this.form.status) req.status = this.form.status;
       let res;
       if (!isEmpty(req)) {
-        res = await this.chequeService.searchCheque(req, skip);
+        res = await this.chequeService.searchPendingCheque(req, skip);
       } else {
-        res = await this.chequeService.findCheque(skip);
+        res = await this.chequeService.findPendingCheque(skip);
       }
       this.setTableItems(res?.data?.data);
       this.total = res?.data.total;
     } catch (e) {
       if (e.response.data.code === 401) {
-        sessionStorage.clear();
+        localStorage.clear();
         window.location.reload();
         return;
       }
@@ -220,7 +230,7 @@ export class ChequeComponent implements OnInit {
 
   async showModalEdit(i: number) {
     const cheque_id = this.items[i].cheque_id;
-    const res = await this.chequeService.getCheque(cheque_id);
+    const res = await this.chequeService.getPendingCheque(cheque_id);
     const modalRef = this.modalService.open(ModalEditChequeComponent, { size: 'lg', centered: true, backdrop: 'static' });
     modalRef.componentInstance.cheque = res?.data;
     modalRef.componentInstance.customerOptions = this.customerOptions;
@@ -231,74 +241,42 @@ export class ChequeComponent implements OnInit {
     });
   }
 
-  async deleteCustomer(i: number) {
-    try {
-      Swal.fire({
-        icon: 'question',
-        title: 'Delete Cheque',
-        text: 'Are you sure to Delete Cheque ?',
-        showConfirmButton: true,
-        showCancelButton: true,
-        confirmButtonText: 'Confirm',
-        reverseButtons: true
-      }).then(async (res) => {
-        if (res.isConfirmed) {
-          const cheque_id = this.items[i].cheque_id;
-          await this.chequeService.deleteCheque(cheque_id);
-          Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: 'Cheque has successfully deleted',
-            allowEscapeKey: false,
-            allowOutsideClick: false
-          }).then(() => {
-            this.clearBtn();
-            this.searchBtn();
-          });
-        }
-      });
-    } catch (e) {
-      if (e?.response?.data?.code === 401) {
-        sessionStorage.clear();
-        window.location.reload();
-        return;
-      }
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: e?.response?.data?.message || e?.message
-      });
-    }
-  }
-
   setTableItems(data: Array<any>) {
     this.items = [];
     if (isEmpty(data)) return;
     data.forEach((e, i) => {
-      console.log(e);
       this.items.push({
         no: (i + 1) + (this.page * this.limit),
         cheque_id: e?.cheque_id,
         cheque_no: e?.cheque_no,
-        customer_name: e?.customer.name,
-        customer_lastname: e?.customer.lastname,
+        customer_name: e?.customer?.name,
         bank_name: e?.bank.bank_name,
         branch_name: e?.branch.branch_name,
         month: e?.month,
         amount: e?.amount,
         pending_date: e?.pending_date,
         approve_date: e?.approve_date,
+        pass_date: e?.pass_date,
         remark: e?.remark,
         status: e?.status
       })
     });
   }
 
-  clearBtn() {
-    this.is_search = false;
-    this.submitted = false;
-    this.form = new ChequeForm();
+  mapStatus(status) {
+    switch (status) {
+      case 'Pending':
+        return 'รอนำเช็คเข้า';
+      case 'Approved':
+        return 'นำเช็คเข้าแล้ว';
+      case 'Pass':
+        return 'เช็คผ่านแล้ว';
+    }
+  }
+
+  clearError() {
     this.error = {
+      customer_id: false,
       cheque_no: false,
       pending_date_from: false,
       pending_date_to: false,
@@ -306,6 +284,13 @@ export class ChequeComponent implements OnInit {
       approve_date_to: false,
       amount: false
     }
+  }
+
+  clearBtn() {
+    this.is_search = false;
+    this.submitted = false;
+    this.form = new ChequeForm();
+    this.clearError();
     this.total = 0;
     this.branchOptions = [];
   }

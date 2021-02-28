@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ViewBankForm } from './modal-view-bank';
 import * as _ from 'lodash';
+import { BankItem } from '../bank';
 
 @Component({
   selector: 'app-modal-view-bank',
@@ -13,14 +14,15 @@ export class ModalViewBankComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal) {
   }
 
-  @Input() bank: any;
+  @Input() bank: BankItem;
   form: ViewBankForm = new ViewBankForm();
 
   ngOnInit(): void {
-    this.form.bank_name = _.get(this.bank, 'data.bank_name');
-    const branches: Array<any> = _.get(this.bank, 'data.branches');
+    console.log(this.bank);
+    this.form.bank_name = this.bank?.bank_name;
+    const branches: any[] = this.bank?.branches;
     this.form.branches = [];
-    branches.forEach((e) => this.form.branches.push({ branch_name: _.get(e, 'branch_name') }));
+    branches.forEach((e) => this.form.branches.push({ branch_name: e?.branch_name }));
   }
 
   closeBtn() {

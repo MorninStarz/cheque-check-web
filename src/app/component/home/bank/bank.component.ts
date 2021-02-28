@@ -21,11 +21,10 @@ export class BankComponent implements OnInit {
 
   form: BankForm = new BankForm();
   fields: Array<string> = [
-    'No.',
-    'Bank Name',
-    'Create Date',
-    'Update Date',
-    'Status',
+    'เลขที่',
+    'ธนาคาร',
+    'สร้างโดย',
+    'แก้ไขโดย'
   ];
   items: Array<BankItem> = [];
   page: number = 0;
@@ -38,7 +37,7 @@ export class BankComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     const permission = _.get(userInfo, 'permission');
     this.permission.canEdit = permission?.edit_permission?.includes('bank');
     this.permission.canDelete = permission?.delete_permission?.includes('bank');
@@ -59,18 +58,18 @@ export class BankComponent implements OnInit {
         data.forEach((e, i) => {
           this.items.push({
             no: (i + 1) + (this.page * this.limit),
-            bank_id: _.get(e, 'bank_id'),
-            bank_name: _.get(e, 'bank_name'),
-            create_date: _.get(e, 'create_date'),
-            update_date: _.get(e, 'update_date'),
-            is_active: _.get(e, 'is_active')
+            bank_id: e?.bank_id,
+            bank_name: e?.bank_name,
+            branches: e?.branch,
+            create_by: e?.create_by,
+            update_by: e?.update_by
           });
         });
         this.total = res?.data?.total;
       } else {
         const status = res?.status;
         if (status === 401) {
-          sessionStorage.clear();
+          localStorage.clear();
           window.location.reload();
           return;
         }
@@ -79,11 +78,11 @@ export class BankComponent implements OnInit {
     } catch (e) {
       const status = e?.response?.data?.code;
       if (status === 401) {
-        sessionStorage.clear();
+        localStorage.clear();
         window.location.reload();
         return;
       }
-      this.errorMsg(e.message);
+      this.errorMsg(e?.response?.data?.message || e);
     }
     this.is_search = true;
   }
@@ -97,9 +96,8 @@ export class BankComponent implements OnInit {
 
   async showModalView(i: number) {
     try {
-      const res = await this.bankService.getBank(this.items[i].bank_id);
       const modalRef = this.modalService.open(ModalViewBankComponent, { size: 'lg', centered: true, backdrop: 'static' });
-      modalRef.componentInstance.bank = res;
+      modalRef.componentInstance.bank = this.items[i];
       modalRef.result.then(() => {
         this.form = new BankForm();
         this.searchBtn();
@@ -107,7 +105,7 @@ export class BankComponent implements OnInit {
     } catch (e) {
       const status = e?.response?.data?.code;
       if (status === 401) {
-        sessionStorage.clear();
+        localStorage.clear();
         window.location.reload();
         return;
       }
@@ -127,7 +125,7 @@ export class BankComponent implements OnInit {
     } catch (e) {
       const status = e?.response?.data?.code;
       if (status === 401) {
-        sessionStorage.clear();
+        localStorage.clear();
         window.location.reload();
         return;
       }
@@ -135,59 +133,10 @@ export class BankComponent implements OnInit {
     }
   }
 
-  async deleteBank(i: number) {
-    Swal.fire({
-      icon: 'question',
-      title: 'Delete Bank',
-      text: 'Are you sure to Delete Bank ?',
-      showConfirmButton: true,
-      showCancelButton: true,
-      confirmButtonText: 'Confirm',
-      reverseButtons: true
-    }).then(async (res) => {
-      if (res.isConfirmed) {
-        try {
-          Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: 'Bank has successfully deleted',
-            allowEscapeKey: false,
-            allowOutsideClick: false
-          }).then(async () => {
-            const bank = this.items[i];
-            const req: any = {
-              bank_id: bank.bank_id,
-              is_active: 0,
-              is_delete: true
-            };
-            const res = await this.bankService.editBank(req);
-            this.clearBtn();
-            this.searchBtn();
-          });
-        } catch (e) {
-          if (e.response.data.code === 401) {
-            sessionStorage.clear();
-            window.location.reload();
-            return;
-          }
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: e.response.data.message
-          });
-        }
-      }
-    });
-  }
-
   clearBtn() {
     this.is_search = false;
     this.form = new BankForm();
     this.total = 0;
-  }
-
-  dateFormat(date: any) {
-    return date ? moment(date).format('DD/MM/YYYY HH:mm:ss') : '-';
   }
 
   errorMsg(message: string) {

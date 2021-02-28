@@ -1,0 +1,106 @@
+<div class="row m-0">
+    <div class="col-md-12 p-4">
+        <h2 class="title"><span class="font-weight-bold" style="color: #6b3d00;">ล</span>งบันทึกการเงินจากเช็คและการโอน</h2>
+    </div>
+</div>
+<!-- Search Box -->
+<div class="content ml-3 mr-3 search-title row">
+    <div class="col-md-12">ค้นหา</div>
+</div>
+<div class="content ml-3 mr-3 p-4 search-content">
+    <div class="row">
+        <div class="col-md-2 mt-1 text-right p-0"><label>ชื่อลูกค้า : </label></div>
+        <div class="col-md-4">
+            <mat-form-field class="customer_field">
+                <input type="text" [(ngModel)]="form.customer_id" 
+                    (ngModelChange)="onChangeCustomer()"
+                    placeholder="กรุณาเลือกชื่อลูกค้า" class="form-control"
+                    matInput [matAutocomplete]="customerAuto">
+                <mat-autocomplete #customerAuto="matAutocomplete">
+                    <mat-option *ngFor="let option of customerFilter" [value]="option.text">
+                        {{ option.text }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="row m-0 p-0">
+        <div class="col-md-2"></div>
+        <div class="col-md-4 error-text">{{ error.customer_id ? 'ไม่พบชื่อลูกค้าที่เลือก !' : '' }}</div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-2 mt-1 text-right p-0"><label>วันที่ จาก : </label></div>
+        <div class="row col-md-4">
+            <div class="col-md-11 pr-0 mr-0">
+                <mat-form-field>
+                    <input [(ngModel)]="form.pending_date_from" (click)="pending_date_from.open()" matInput class="form-control" placeholder="เลือกวันที่"
+                        [matDatepicker]="pending_date_from" readonly>
+                    <mat-datepicker #pending_date_from></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-1 pl-0 ml-0">
+                <mat-datepicker-toggle matSuffix [for]="pending_date_from"></mat-datepicker-toggle>
+            </div>
+        </div>
+        <div class="col-md-1 mt-1 ml-4 mr-2 p-0 text-right"><label>ถึง : </label></div>
+        <div class="row col-md-4">
+            <div class="col-md-11 pr-0 mr-0">
+                <mat-form-field>
+                    <input [(ngModel)]="form.pending_date_to" (click)="pending_date_to.open()" matInput class="form-control" placeholder="เลือกวันที่"
+                        [matDatepicker]="pending_date_to" readonly>
+                    <mat-datepicker #pending_date_to></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-1 pl-0 ml-0">
+                <mat-datepicker-toggle matSuffix [for]="pending_date_to"></mat-datepicker-toggle>
+            </div>
+        </div>
+    </div>
+    <div class="row m-0 p-0" *ngIf="error.pending_date_from || error.pending_date_to">
+        <div class="col-md-2"></div>
+        <div class="col-md-4 error-text">วันที่ไม่ถูกต้อง !</div>
+        <div class="col-md-1"></div>
+        <div class="col-md-4 error-text">วันที่ไม่ถูกต้อง !</div>
+    </div>
+</div>
+
+<div class="ml-3 mr-3 mt-4 row">
+    <div class="col-md-4"></div>
+    <div class="col-md-2">
+        <button (click)="clearBtn()" class="btn btn-default"
+            style="border: 1px solid #cccccc; width: 100%;">ล้างข้อมูล</button>
+    </div>
+    <div class="col-md-2">
+        <button (click)="searchBtn()" class="btn-submit">ค้นหา</button>
+    </div>
+</div>
+<ng-container *ngIf="is_search">
+    <div class="ml-3 mr-3 mt-4 row">
+        <div class="col-md-12 table-responsive">
+            <table class="table">
+                <tr class="table-head">
+                    <th *ngFor="let field of fields">{{ field }}</th>
+                    <!-- <th>Action</th> -->
+                </tr>
+                <ng-container *ngIf="items.length > 0">
+                    <tr *ngFor="let item of items; let i = index;">
+                        <td class="text-center">{{ item.no }}</td>
+                        <td>{{ item.customer_name || '-' }}</td>
+                        <td class="text-right">{{ numberFormat(item.amount) }}</td>
+                        <td>{{ item.cheque_no || '-' }}</td>
+                        <td class="text-center">{{ dateFormat(item.pending_date) }}</td>
+                        <td class="text-center">{{ dateTimeFormat(item.transfer_date) }}</td>
+                        <td class="text-center">{{ item.type || '-' }}</td>
+                    </tr>
+                </ng-container>
+                <ng-container *ngIf="items.length < 1">
+                    <tr class="text-center">
+                        <td colspan="11">ไม่พบข้อมูล</td>
+                    </tr>
+                </ng-container>
+            </table>
+        </div>
+    </div>
+    <app-pagination *ngIf="items.length > 0" [limit]="limit" [total]="total" (pageEmit)="pagination($event)">
+    </app-pagination>
+</ng-container>

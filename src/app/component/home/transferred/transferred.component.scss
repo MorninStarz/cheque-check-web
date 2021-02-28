@@ -1,0 +1,13 @@
+.spinner {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    background-image: url('../../../../assets/spinner.gif');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.has-error {
+    border-color: #fe4f4f;
+    box-shadow: 0 0 0 0.2rem rgba($color: #fe4f4f, $alpha: 0.25);
+}

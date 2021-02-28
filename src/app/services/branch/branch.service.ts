@@ -8,7 +8,7 @@ import { getAxios } from '../set-header';
 })
 export class BranchService {
 
-  userInfo = JSON.parse(sessionStorage.getItem('userInfo'));
+  userInfo = JSON.parse(localStorage.getItem('userInfo'));
   url: string;
 
   constructor() { 

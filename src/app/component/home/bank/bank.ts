@@ -7,7 +7,7 @@ export class BankItem {
     no: number;
     bank_id: string;
     bank_name: string;
-    create_date: string;
-    update_date: string;
-    is_active: boolean;
+    branches: any[];
+    create_by: string;
+    update_by: string;
 }

@@ -1,14 +1,14 @@
 <div class="modal-header">
-    <h4 class="modal-title">Edit Cheque</h4>
+    <h4 class="modal-title">แก้ไขเช็ค</h4>
     <button type="button" class="close" aria-label="Close" (click)="closeBtn()">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
 <div class="modal-body">
     <div class="row">
-        <div class="col-md-4 mt-2 text-right"><label>Cheque No. : </label></div>
+        <div class="col-md-4 mt-2 text-right"><label>เลขที่เช็ค : </label></div>
         <div class="col-md-6">
-            <input [(ngModel)]="form.cheque_no" class="form-control" placeholder="Enter Cheque No." />
+            <input [(ngModel)]="form.cheque_no" class="form-control" placeholder="กรุณากรอกเลขที่เช็ค" disabled/>
         </div>
     </div>
     <div *ngIf="submitted && !form.cheque_no" class="row p-0 mx-0">

@@ -1,0 +1,103 @@
+<div class="row m-0">
+    <div class="col-md-12 p-4">
+        <h2 class="title"><span class="font-weight-bold" style="color: #6b3d00;">ลู</span>กค้าที่ใช้การโอน</h2>
+    </div>
+</div>
+<!-- Search Box -->
+<div class="content ml-3 mr-3 search-title row"><div class="col-md-12">ค้นหา</div></div>
+<div class="content ml-3 mr-3 p-4 search-content">
+    <div class="row">
+        <div class="col-md-2 mt-1 text-right"><label>ชื่อลูกค้า : </label></div>
+        <div class="col-md-4">
+            <mat-form-field class="customer_field">
+                <input type="text" [formControl]="customer" placeholder="กรุณาเลือกชื่อลูกค้า" class="form-control"
+                    matInput [matAutocomplete]="customerAuto">
+                <mat-autocomplete #customerAuto="matAutocomplete">
+                    <mat-option *ngFor="let option of customerFilter | async" [value]="option.text">
+                        {{ option.text }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+        <div class="col-md-1 mt-1 text-right"><label>จำนวนเงิน : </label></div>
+        <div class="col-md-4">
+            <input [(ngModel)]="form.amount" type="text" class="form-control" placeholder="กรุณากรอกจำนวนเงิน"
+                autocomplete="off" />
+        </div>
+    </div>
+    <div class="row m-0 p-0">
+        <div class="col-md-2"></div>
+        <div class="col-md-4 error-text">{{ error.customer_id ? 'ไม่พบชื่อลูกค้าที่เลือก !' : '' }}</div>
+        <div class="col-md-1"></div>
+        <div class="col-md-4 error-text">{{ error.amount ? 'กรุณากรอกตัวเลข !' : '' }}</div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-2 mt-1 text-right p-0"><label>วันที่โอน จาก : </label></div>
+        <div class="row col-md-4">
+            <div class="col-md-11 pr-0 mr-0">
+                <mat-form-field>
+                    <input [(ngModel)]="form.transfer_date_from" (click)="transfer_date_from.open()" matInput class="form-control" placeholder="เลือกวันที่"
+                        [matDatepicker]="transfer_date_from" readonly>
+                    <mat-datepicker #transfer_date_from></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-1 pl-0 ml-0">
+                <mat-datepicker-toggle matSuffix [for]="transfer_date_from"></mat-datepicker-toggle>
+            </div>
+        </div>
+        <div class="col-md-1 mt-1 ml-4 mr-2 p-0 text-right"><label>ถึง : </label></div>
+        <div class="row col-md-4">
+            <div class="col-md-11 pr-0 mr-0">
+                <mat-form-field>
+                    <input [(ngModel)]="form.transfer_date_to" (click)="transfer_date_to.open()" matInput class="form-control" placeholder="เลือกวันที่"
+                        [matDatepicker]="transfer_date_to" readonly>
+                    <mat-datepicker #transfer_date_to></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-1 pl-0 ml-0">
+                <mat-datepicker-toggle matSuffix [for]="transfer_date_to"></mat-datepicker-toggle>
+            </div>
+        </div>
+    </div>
+    <div class="row m-0 p-0" *ngIf="error.transfer_date_from || error.transfer_date_to">
+        <div class="col-md-2"></div>
+        <div class="col-md-4 error-text">วันที่ไม่ถูกต้อง !</div>
+        <div class="col-md-1"></div>
+        <div class="col-md-4 error-text">วันที่ไม่ถูกต้อง !</div>
+    </div>
+</div>
+
+<div class="ml-3 mr-3 mt-4 row">
+    <div class="col-md-4"></div>
+    <div class="col-md-2">
+        <button (click)="clearBtn()" class="btn btn-default" style="border: 1px solid #cccccc; width: 100%;">ล้างข้อมูล</button>
+    </div>
+    <div class="col-md-2">
+        <button (click)="searchBtn()" class="btn-submit">ค้นหา</button>
+    </div>
+</div>
+<ng-container *ngIf="is_search">
+    <div *ngIf="permission.canEdit" class="row pr-4">
+        <div class="col-md-10"></div>
+        <div class="col-md-2">
+            <button (click)="showModalAdd()" class="btn-submit">+ เพิ่มรายการโอน</button>
+        </div>
+    </div>
+    <div class="ml-3 mr-3 mt-4 row">
+        <table class="table">
+            <tr><th *ngFor="let field of fields">{{ field }}</th></tr>
+            <ng-container *ngIf="items.length > 0">
+                <tr *ngFor="let item of items; let i = index;">
+                    <td class="text-center">{{ item.no }}</td>
+                    <td>{{ item.customer_name || '-' }}</td>
+                    <td class="text-right">{{ numberFormat(item.amount) }}</td>
+                    <td class="text-center">{{ dateFormat(item.transfer_date) }}</td>
+                </tr>
+            </ng-container>
+            <ng-container *ngIf="items.length < 1">
+                <tr class="text-center"><td colspan="9">ไม่พบข้อมูล</td></tr>
+            </ng-container>
+        </table>
+    </div>
+    <app-pagination *ngIf="items.length > 0" [limit]="limit" [total]="total" (pageEmit)="pagination($event)"></app-pagination>    
+</ng-container>

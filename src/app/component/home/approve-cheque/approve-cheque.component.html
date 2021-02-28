@@ -1,0 +1,196 @@
+<div class="row m-0">
+    <div class="col-md-12 p-4">
+        <h2 class="title"><span class="font-weight-bold" style="color: #6b3d00;">วั</span>นท่ีเช็คผ่าน</h2>
+    </div>
+</div>
+<!-- Search Box -->
+<div class="content ml-3 mr-3 search-title row">
+    <div class="col-md-12">ค้นหา</div>
+</div>
+<div class="content ml-3 mr-3 p-4 search-content">
+    <div class="row">
+        <div class="col-md-2 mt-1 text-right p-0"><label>เลขที่เช็ค : </label></div>
+        <div class="col-md-4">
+            <input [(ngModel)]="form.cheque_no" (ngModelChange)="error.cheque_no = false" type="text"
+                class="form-control" placeholder="กรุณาระบุเลขที่เช็ค" autocomplete="off" />
+        </div>
+        <div class="col-md-1 mt-1 text-right p-0"><label>ชื่อลูกค้า : </label></div>
+        <div class="col-md-4">
+            <mat-form-field class="customer_field">
+                <input type="text" [formControl]="customer" placeholder="กรุณาเลือกชื่อลูกค้า" class="form-control"
+                    matInput [matAutocomplete]="customerAuto">
+                <mat-autocomplete #customerAuto="matAutocomplete">
+                    <mat-option *ngFor="let option of customerFilter | async" [value]="option.text">
+                        {{ option.text }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="row m-0 p-0">
+        <div class="col-md-2"></div>
+        <div class="col-md-4 error-text">{{ error.cheque_no ? 'กรุณากรอกตัวเลข !' : '' }}</div>
+        <div class="col-md-1"></div>
+        <div class="col-md-4 error-text">{{ error.customer_id ? 'ไม่พบชื่อลูกค้าที่เลือก !' : '' }}</div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-2 mt-1 text-right p-0"><label>ธนาคาร : </label></div>
+        <div class="col-md-4">
+            <select [(ngModel)]="form.bank_id" (change)="onChangeBank()" class="form-control">
+                <option value="" disabled>--- กรุณาเลือก ---</option>
+                <option value="{{ option.value }}" *ngFor="let option of bankOptions">{{ option.text }}</option>
+            </select>
+        </div>
+        <div class="col-md-1 mt-1 pl-0 text-right p-0"><label>สาขา : </label></div>
+        <div class="col-md-4">
+            <select [(ngModel)]="form.branch_id" class="form-control"
+                [disabled]="!branchOptions || branchOptions.length === 0">
+                <option value="" disabled>--- กรุณาเลือก ---</option>
+                <option value="{{ option.value }}" *ngFor="let option of branchOptions">{{ option.text }}</option>
+            </select>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-2 mt-1 text-right p-0"><label>วันที่หน้าเช็ค จาก : </label></div>
+        <div class="row col-md-4">
+            <div class="col-md-11 pr-0 mr-0">
+                <mat-form-field>
+                    <input [(ngModel)]="form.pending_date_from" (click)="pending_date_from.open()" matInput
+                        class="form-control" placeholder="เลือกวันที่" [matDatepicker]="pending_date_from" readonly>
+                    <mat-datepicker #pending_date_from></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-1 pl-0 ml-0">
+                <mat-datepicker-toggle matSuffix [for]="pending_date_from"></mat-datepicker-toggle>
+            </div>
+        </div>
+        <div class="col-md-1 mt-1 ml-4 mr-2 p-0 text-right"><label>ถึง : </label></div>
+        <div class="row col-md-4">
+            <div class="col-md-11 pr-0 mr-0">
+                <mat-form-field>
+                    <input [(ngModel)]="form.pending_date_to" matInput (click)="pending_date_to.open()"
+                        class="form-control" placeholder="เลือกวันที่" [matDatepicker]="pending_date_to" readonly>
+                    <mat-datepicker #pending_date_to></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-1 pl-0 ml-0">
+                <mat-datepicker-toggle matSuffix [for]="pending_date_to"></mat-datepicker-toggle>
+            </div>
+        </div>
+    </div>
+    <div class="row m-0 p-0" *ngIf="error.pending_date_from || error.pending_date_to">
+        <div class="col-md-2"></div>
+        <div class="col-md-4 error-text">วันที่ไม่ถูกต้อง !</div>
+        <div class="col-md-1"></div>
+        <div class="col-md-4 error-text">วันที่ไม่ถูกต้อง !</div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-2 mt-1 text-right p-0"><label>วันที่นำเช็คเข้า จาก : </label></div>
+        <div class="row col-md-4">
+            <div class="col-md-11 pr-0 mr-0">
+                <mat-form-field>
+                    <input [(ngModel)]="form.approve_date_from" matInput (click)="approve_date_from.open()"
+                        class="form-control" placeholder="เลือกวันที่" [matDatepicker]="approve_date_from" readonly>
+                    <mat-datepicker #approve_date_from></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-1 pl-0 ml-0">
+                <mat-datepicker-toggle matSuffix [for]="approve_date_from"></mat-datepicker-toggle>
+            </div>
+        </div>
+        <div class="col-md-1 mt-1 ml-4 mr-2 p-0 text-right"><label>ถึง : </label></div>
+        <div class="row col-md-4">
+            <div class="col-md-11 pr-0 mr-0">
+                <mat-form-field>
+                    <input [(ngModel)]="form.approve_date_to" matInput (click)="approve_date_to.open()"
+                        class="form-control" placeholder="เลือกวันที่" [matDatepicker]="approve_date_to" readonly>
+                    <mat-datepicker #approve_date_to></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="col-md-1 pl-0 ml-0">
+                <mat-datepicker-toggle matSuffix [for]="approve_date_to"></mat-datepicker-toggle>
+            </div>
+        </div>
+    </div>
+    <div class="row m-0 p-0" *ngIf="error.approve_date_from || error.approve_date_to">
+        <div class="col-md-2"></div>
+        <div class="col-md-4 error-text">วันที่ไม่ถูกต้อง !</div>
+        <div class="col-md-1"></div>
+        <div class="col-md-4 error-text">วันที่ไม่ถูกต้อง !</div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-2 mt-1 text-right p-0"><label>จำนวนเงิน : </label></div>
+        <div class="col-md-4">
+            <input [(ngModel)]="form.amount" type="text" class="form-control" placeholder="กรุณากรอกจำนวนเงิน"
+                autocomplete="off" />
+        </div>
+    </div>
+    <div class="row m-0 p-0" *ngIf="error.amount">
+        <div class="col-md-2"></div>
+        <div class="col-md-4 error-text">กรุณากรอกตัวเลข !</div>
+    </div>
+</div>
+
+<div class="ml-3 mr-3 mt-4 row">
+    <div class="col-md-4"></div>
+    <div class="col-md-2">
+        <button (click)="clearBtn()" class="btn btn-default"
+            style="border: 1px solid #cccccc; width: 100%;">ล้างข้อมูล</button>
+    </div>
+    <div class="col-md-2">
+        <button (click)="searchBtn()" class="btn-submit">ค้นหา</button>
+    </div>
+</div>
+<ng-container *ngIf="is_search">
+    <div class="ml-3 mr-3 mt-4 row">
+        <div class="col-md-12 table-responsive">
+            <table class="table">
+                <tr class="table-head">
+                    <th *ngFor="let field of fields">{{ field }}</th>
+                    <th>ดำเนินการ</th>
+                </tr>
+                <ng-container *ngIf="items.length > 0">
+                    <tr *ngFor="let item of items; let i = index;">
+                        <td>{{ item.cheque_no || '-' }}</td>
+                        <td>{{ item.customer_name || '-' }}</td>
+                        <td>{{ item.bank_name + '/' + item.branch_name }}</td>
+                        <td class="text-center">{{ item.month }}</td>
+                        <td class="text-right">{{ numberFormat(item.amount) }}</td>
+                        <td class="text-center">{{ dateFormat(item.pending_date) }}</td>
+                        <td class="text-center">{{ dateFormat(item.approve_date) }}</td>
+                        <td class="text-center">
+                            <mat-form-field>
+                                <input [(ngModel)]="item.pass_date" (click)="pass_date.open()" matInput
+                                    class="form-control" placeholder="เลือกวันที่" [matDatepicker]="pass_date"
+                                    (ngModelChange)="item.is_date_error = false"
+                                    [ngClass]="{ 'has-error': item.is_date_error }"
+                                    readonly [disabled]="!item.is_edit">
+                                <mat-datepicker #pass_date></mat-datepicker>
+                            </mat-form-field>
+                        </td>
+                        <td class="text-center">
+                            <input [(ngModel)]="item.remark" class="form-control"
+                                placeholder="กรุณากรอกหมายเหตุ" (ngModelChange)="item.is_remark_error = false"
+                                [ngClass]="{ 'has-error': item.is_remark_error }" [disabled]="!item.is_edit" />
+                        </td>
+                        <td class="text-center">
+                            <img *ngIf="permission.canEdit && !item.is_edit" (click)="item.is_edit = true" class="m-1"
+                                style="cursor: pointer;" src="../../../../assets/edit.svg" />
+                            <img *ngIf="permission.canEdit && item.is_edit" (click)="approveCheque(i)" class="m-1"
+                                style="cursor: pointer;" src="../../../../assets/submit.svg" />
+                            <img *ngIf="permission.canEdit && item.is_edit" (click)="rejectCheque(i)" class="m-1"
+                                style="cursor: pointer;" src="../../../../assets/reverse.svg" />
+                            <img *ngIf="permission.canEdit && item.is_edit" (click)="cancelEdit(item)" class="m-1"
+                                style="cursor: pointer;" src="../../../../assets/cancel.svg" />
+                        </td>
+                    </tr>
+                </ng-container>
+                <ng-container *ngIf="items.length < 1">
+                    <tr class="text-center">
+                        <td colspan="11">ไม่พบข้อมูล</td>
+                    </tr>
+                </ng-container>
+            </table>
+        </div>
+    </div>
+</ng-container>

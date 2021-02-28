@@ -41,9 +41,28 @@ $base-color: #ffb553;
 .end-menu {
     margin-bottom: 8vh;
 }
+.logo-container {
+    cursor: pointer;
+    margin: auto;
+    text-align: center;
+    display: inline-block;
+}
+.logo-container:active, .logo-container:focus {
+    border: 0;
+    box-shadow: none;
+    outline: none;
+}
 .logo {
-    width: 80%;
+    width: 100%;
     height: auto;
+}
+.logo:focus, .logo:active {
+    border: 0;
+    box-shadow: none;
+    outline: none;
+}
+.no-focus {
+    outline: none;
 }
 .active {
     color: #6b3d00;

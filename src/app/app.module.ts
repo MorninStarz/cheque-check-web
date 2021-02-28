@@ -7,10 +7,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { UploadDirective } from './upload.directive';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    UploadDirective
   ],
   imports: [
     BrowserModule,
@@ -18,8 +21,10 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     BrowserAnimationsModule,
     MatDatepickerModule,
     MatMomentDateModule,
+    MatAutocompleteModule,
     NgbModule
   ],
+  exports: [UploadDirective],
   providers: [],
   bootstrap: [AppComponent]
 })

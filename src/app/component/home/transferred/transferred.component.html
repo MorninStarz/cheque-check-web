@@ -1,0 +1,117 @@
+<div class="row m-0">
+    <div class="col-md-12 p-4">
+        <h2 class="title"><span class="font-weight-bold" style="color: #6b3d00;">ลู</span>กค้าที่ใช้การโอน</h2>
+    </div>
+</div>
+<div class="content ml-3 mr-3 search-title row">
+    <div class="col-md-12">อัพโหลดไฟล์ (.csv)</div>
+</div>
+<div class="content ml-3 mr-3 p-4 search-content">
+    <div class="row">
+        <div class="col-md-6 offset-md-3 text-center">
+            <div *ngIf="!file" class="uploadfilecontainer" (click)="fileInput.click()" appUpload
+                (onFileDropped)="uploadFile($event)">
+                <input hidden type="file" #fileInput (change)="uploadFile($event.target.files)">
+            </div>
+            <div *ngIf="file" class="uploadfilecontainer"
+                style="cursor: default; background-image: none; vertical-align: middle;">
+                <label class="mt-4">{{ file.name }}</label>
+                <hr>
+                <button *ngIf="upload_state !== 'uploaded'" (click)="uploadBtn()"
+                    class="btn-submit w-25 mr-4">อัพโหลด</button>
+                <button *ngIf="upload_state !== 'uploaded'" (click)="file = null"
+                    class="btn btn-secondary w-25">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="text-center mt-5">
+    <div *ngIf="upload_state === 'uploading'" class="spinner"></div>
+    <ng-container *ngIf="upload_state === 'uploaded'">
+        <div *ngIf="!is_success" class="row pr-4">
+            <div class="col-md-12 text-center">
+                <h4>รายการที่มียอดเงินซ้ำ</h4>
+            </div>
+        </div>
+        <div *ngIf="!is_success" class="ml-3 mr-3 mt-2 row">
+            <table class="table">
+                <tr>
+                    <th *ngFor="let field of fields">{{ field }}</th>
+                </tr>
+                <ng-container *ngIf="unset_items.length > 0">
+                    <tr *ngFor="let item of unset_items; let i = index;">
+                        <td class="text-center">{{ item.no }}</td>
+                        <td class="text-right">{{ numberFormat(item.amount) }}</td>
+                        <td class="text-center">{{ item.transfer_date }}</td>
+                        <td class="text-center">
+                            <mat-form-field class="customer_field">
+                                <input type="text" [(ngModel)]="item.customer_id" (ngModelChange)="onChangeName(i)"
+                                    placeholder="กรุณาเลือกชื่อลูกค้า" class="form-control" matInput
+                                    [ngClass]="{ 'has-error': item.is_error }" [matAutocomplete]="customerAuto">
+                                <mat-autocomplete #customerAuto="matAutocomplete">
+                                    <mat-option *ngFor="let option of customerFilter[i]" [value]="option.text">
+                                        {{ option.text }}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                        </td>
+                    </tr>
+                    <tr *ngFor="let item of unmatch_items; let i = index;">
+                        <td class="text-center">{{ item.no }}</td>
+                        <td class="text-right">{{ numberFormat(item.amount) }}</td>
+                        <td class="text-center">{{ item.transfer_date }}</td>
+                        <td class="text-center">
+                            <select [(ngModel)]="item.customer_id" class="form-control">
+                                <option value="" disabled>--- กรุณาเลือก ---</option>
+                                <option *ngFor="let option of unmatch_ddl[i]" value="option.value">{{ option.text }}</option>
+                            </select>
+                        </td>
+                    </tr>
+                </ng-container>
+                <ng-container *ngIf="unset_items.length + unmatch_items.length < 1">
+                    <tr class="text-center">
+                        <td colspan="9">ไม่พบข้อมูล</td>
+                    </tr>
+                </ng-container>
+            </table>
+        </div>
+        <div *ngIf="!is_success" class="ml-3 mr-3 mt-2 mb-4 row">
+            <div class="col-md-2 offset-md-4">
+                <button (click)="resetBtn()" class="btn btn-secondary" style="width: 100%">ยกเลิก</button>
+            </div>
+            <div class="col-md-2">
+                <button (click)="saveBtn()" class="btn-submit">บันทึก</button>
+            </div>
+        </div>
+        <div class="row pr-4">
+            <div class="col-md-12 text-center">
+                <h4>รายการที่ยืนยันยอดเงินสำเร็จ</h4>
+            </div>
+        </div>
+        <div class="ml-3 mr-3 mt-2 row">
+            <table class="table">
+                <tr>
+                    <th *ngFor="let field of fields">{{ field }}</th>
+                </tr>
+                <ng-container *ngIf="success_items.length > 0">
+                    <tr *ngFor="let item of success_items; let i = index;">
+                        <td class="text-center">{{ item.no }}</td>
+                        <td class="text-right">{{ numberFormat(item.amount) }}</td>
+                        <td class="text-center">{{ dateFormat(item.transfer_date) }}</td>
+                        <td class="text-center">{{ item.customer_name }}</td>
+                    </tr>
+                </ng-container>
+                <ng-container *ngIf="success_items.length < 1">
+                    <tr class="text-center">
+                        <td colspan="9">ไม่พบข้อมูล</td>
+                    </tr>
+                </ng-container>
+            </table>
+        </div>
+        <div class="ml-3 mr-3 mt-2 mb-4 row">
+            <div *ngIf="is_success" class="col-md-2 offset-md-5">
+                <button (click)="resetBtn()" class="btn-submit">เสร็จสิ้น</button>
+            </div>
+        </div>
+    </ng-container>
+</div>

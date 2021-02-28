@@ -72,15 +72,15 @@ export class TransferredComponent implements OnInit {
   uploadFile(event: FileList) {
     this.file = event && event.length > 0 ? event.item(0) : null;
     if (event && event.length > 0) {
-      if (event.item(0).type !== 'text/csv') {
-        Swal.fire({
-          icon: 'error',
-          title: 'ผิดพลาด',
-          text: 'อัพโหลดไฟล์นามสกุล .csv เท่านั้น'
-        }).then(() => this.file = null);
-      } else {
+      // if (event.item(0).type !== 'text/csv') {
+      //   Swal.fire({
+      //     icon: 'error',
+      //     title: 'ผิดพลาด',
+      //     text: 'อัพโหลดไฟล์นามสกุล .csv เท่านั้น'
+      //   }).then(() => this.file = null);
+      // } else {
         this.file = event.item(0);
-      }
+      // }
     }
   }
 

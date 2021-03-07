@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserForm, UserItem } from './user';
 
 @Component({
   selector: 'app-user',
@@ -8,6 +9,14 @@ import { Component, OnInit } from '@angular/core';
 export class UserComponent implements OnInit {
 
   constructor() { }
+
+  form: UserForm = new UserForm();
+  fields: string[] = [
+    'เลขที่',
+    'ชื่อผู้ใช้',
+    'กลุ่ม'
+  ];
+  items: UserItem[] = [];
 
   ngOnInit(): void {
   }

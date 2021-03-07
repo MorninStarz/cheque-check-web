@@ -1,9 +1,9 @@
-<div class="row m-0">
+<!-- <div class="row m-0">
     <div class="col-md-12 p-4">
         <h2 class="title"><span class="font-weight-bold" style="color: #6b3d00;">บั</span>ญชีผู้ใช้งาน</h2>
     </div>
 </div>
-<!-- Search Box -->
+Search Box
 <div class="content ml-3 mr-3 search-title row">
     <div class="col-md-12">ค้นหา</div>
 </div>
@@ -38,7 +38,7 @@
             <table class="table">
                 <tr class="table-head">
                     <th *ngFor="let field of fields">{{ field }}</th>
-                    <!-- <th>Action</th> -->
+                    <th>Action</th>
                 </tr>
                 <ng-container *ngIf="items.length > 0">
                     <tr *ngFor="let item of items; let i = index;">
@@ -65,4 +65,4 @@
     </div>
     <app-pagination *ngIf="items.length > 0" [limit]="limit" [total]="total" (pageEmit)="pagination($event)">
     </app-pagination>
-</ng-container>
+</ng-container> -->

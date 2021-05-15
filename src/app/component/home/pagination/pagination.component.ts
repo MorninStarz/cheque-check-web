@@ -35,8 +35,9 @@ export class PaginationComponent implements OnInit {
     this.pageEmit.emit(this.current);
   }
 
-  page(i: number) {
+  selectPage(i: number = 0) {
     this.current = i;
+    console.log('in page');
     this.pageEmit.emit(this.current);
   }
 
